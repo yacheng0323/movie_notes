@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_notes/routes/app_router.gr.dart';
 import 'package:movie_notes/ui/record_page/record_page.dart';
 import 'package:movie_notes/utils/palette.dart';
@@ -7,18 +8,18 @@ import 'package:movie_notes/utils/text_getter.dart';
 import 'package:provider/provider.dart';
 
 @RoutePage()
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
-    final palette = context.watch<Palette>();
-    final textGetter = context.watch<TextGetter>();
+    final palette = ref.context.watch<Palette>();
+    final textGetter = ref.context.watch<TextGetter>();
 
     return Scaffold(
       appBar: AppBar(
@@ -31,7 +32,8 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
               onPressed: () {
-                context.router.push(const RecordRoute());
+                AutoRouter.of(context).push(const RecordRoute());
+                // context.router.push(const RecordRoute());
               },
               icon: const Icon(
                 Icons.add,
@@ -53,6 +55,13 @@ class _HomePageState extends State<HomePage> {
             SearchAnchor.bar(
                 isFullScreen: false,
                 suggestionsBuilder: (context, controller) {
+                  // return [
+                  //   FutureBuilder(
+                  //       future: future,
+                  //       builder: (context, snapshot) {
+                  //         // if (snapshot.connectionState == Con)
+                  //       })
+                  // ];
                   return List.generate(
                       5,
                       (index) => ListTile(

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' as river;
+import 'package:movie_notes/ui/record_page/provider/record_provider.dart';
 import 'package:movie_notes/routes/app_router.dart';
-import 'package:movie_notes/ui/home_page/home_page.dart';
 import 'package:movie_notes/utils/palette.dart';
 import 'package:movie_notes/utils/text_getter.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(
+    const river.ProviderScope(child: MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -20,6 +25,7 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider(create: (context) => Palette()),
         Provider(create: (context) => TextGetter(context)),
+        ChangeNotifierProvider(create: (context) => RecordProvider()),
       ],
       child: MaterialApp.router(
         routerConfig: appRouter.config(),
