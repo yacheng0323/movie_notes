@@ -7,15 +7,19 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:movie_notes/database/record_db.dart';
-import 'package:movie_notes/ui/record_page/provider/record_provider.dart';
+import 'package:movie_notes/entities/record_data.dart';
+import 'package:movie_notes/ui/record_page/controllers/record_controller.dart';
 import 'package:movie_notes/utils/palette.dart';
 import 'package:movie_notes/utils/text_getter.dart';
 import 'package:provider/provider.dart';
 
 @RoutePage()
 class RecordPage extends ConsumerStatefulWidget {
-  const RecordPage({super.key});
+  const RecordPage({super.key, this.recordData});
+
+  final RecordData? recordData;
 
   @override
   ConsumerState<RecordPage> createState() => _RecordPageState();
@@ -26,6 +30,7 @@ class _RecordPageState extends ConsumerState<RecordPage> {
   final titleController = TextEditingController();
   final theaterController = TextEditingController();
   final contentController = TextEditingController();
+  DateTime? dateTime;
 
   File? _image;
   final picker = ImagePicker();
@@ -55,14 +60,23 @@ class _RecordPageState extends ConsumerState<RecordPage> {
 
   @override
   void initState() {
-    // context.read<RecordProvider>().getRecordData(title: title, theater: theater, content: content);
+    if (widget.recordData != null) {
+      titleController.text = widget.recordData!.title;
+      theaterController.text = widget.recordData!.theater;
+      contentController.text = widget.recordData!.content ?? "";
+      dateTime = DateTime.fromMillisecondsSinceEpoch(
+          widget.recordData!.datetime * 1000);
+      _image = File(widget.recordData!.imagePath ?? "");
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final palette = context.watch<Palette>();
-    final textGetter = context.watch<TextGetter>();
+    final palette = ref.watch<Palette>(paletteProvider);
+    final textGetter = ref.watch<TextGetter>(textGetterProvider);
+    final ddd = ref.read(recordProvider.notifier);
+    final sss = ref.watch(recordDBProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -70,7 +84,7 @@ class _RecordPageState extends ConsumerState<RecordPage> {
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
-          "新增備忘錄",
+          "電影記事本",
           style: textGetter.headlineSmall?.copyWith(
               fontWeight: FontWeight.w700, color: palette.titleTextColor),
         ),
@@ -78,42 +92,22 @@ class _RecordPageState extends ConsumerState<RecordPage> {
           TextButton(
               onPressed: () async {
                 // TODO: 記得寫入DB
-                // if (_formKey.currentState?.validate() == true) {}
-                final ss = await RecordDB().fetchAll();
-                print(ss[0].theater);
-                // print(ss[0].);
+                if (_formKey.currentState?.validate() == true) {
+                  RecordData recordData = RecordData(
+                      title: titleController.text,
+                      datetime:
+                          ref.watch(dateTimeProvider).millisecondsSinceEpoch ~/
+                              1000,
+                      theater: theaterController.text,
+                      content: contentController.text,
+                      imagePath: _image?.path);
+                  await ddd.addRecord(record: recordData);
+                }
               },
               child: Text(
                 "完成",
                 style: textGetter.bodyLarge?.copyWith(color: Colors.white),
               )),
-          IconButton(
-              onPressed: () async {
-                await RecordDB().deleteAll();
-                // await RecordDB().create(
-                //     title: "蜘蛛人2",
-                //     datetime: DateTime.utc(
-                //           2024,
-                //           3,
-                //           24,
-                //         ).millisecondsSinceEpoch ~/
-                //         1000,
-                //     theater: "比漾廣場的4f",
-                //     content: "輸入測試",
-                //     filename: "????");
-                // await RecordDB().update(
-                //     id: 1,
-                //     theater: "比漾廣場5樓拉",
-                //     title: '蜘蛛人2',
-                //     content: "",
-                //     datetime: DateTime.utc(
-                //           2024,
-                //           3,
-                //           24,
-                //         ).millisecondsSinceEpoch ~/
-                //         1000);
-              },
-              icon: Icon(Icons.add)),
         ],
       ),
       body: SingleChildScrollView(
@@ -121,6 +115,7 @@ class _RecordPageState extends ConsumerState<RecordPage> {
           padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
           child: Form(
             key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               children: [
                 Container(
@@ -143,7 +138,7 @@ class _RecordPageState extends ConsumerState<RecordPage> {
                       Expanded(
                         child: TextButton(
                             onPressed: () {
-                              DatePicker.showDatePicker(
+                              DatePicker.showDateTimePicker(
                                 context,
                                 showTitleActions: true,
                                 minTime: DateTime(2000, 1, 1),
@@ -152,13 +147,15 @@ class _RecordPageState extends ConsumerState<RecordPage> {
                                   print("change $date");
                                 },
                                 onConfirm: (date) {
-                                  print("confirm $date");
+                                  ref.read(dateTimeProvider.notifier).state =
+                                      date;
                                 },
                                 currentTime: DateTime.now(),
                                 locale: LocaleType.zh,
                               );
                             },
-                            child: Text("${DateTime.now()}")),
+                            child: Text(
+                                "${DateFormat("yyyy/MM/dd HH:mm").format(ref.watch(dateTimeProvider))}")),
                       ),
                     ],
                   ),
@@ -171,7 +168,7 @@ class _RecordPageState extends ConsumerState<RecordPage> {
                         style:
                             textGetter.bodyLarge?.copyWith(color: Colors.black),
                       ),
-                      Padding(padding: EdgeInsets.all(4)),
+                      const Padding(padding: EdgeInsets.all(12)),
                       Expanded(
                           child: TextFormField(
                         controller: theaterController,
@@ -202,18 +199,14 @@ class _RecordPageState extends ConsumerState<RecordPage> {
                           CupertinoActionSheetAction(
                             child: Text('相簿'),
                             onPressed: () {
-                              // close the options modal
                               Navigator.of(context).pop();
-                              // get image from gallery
                               getImageFromGallery();
                             },
                           ),
                           CupertinoActionSheetAction(
                             child: Text('拍照'),
                             onPressed: () {
-                              // close the options modal
                               Navigator.of(context).pop();
-                              // get image from camera
                               getImageFromCamera();
                             },
                           ),
@@ -228,9 +221,7 @@ class _RecordPageState extends ConsumerState<RecordPage> {
                     width: MediaQuery.of(context).size.width,
                     height: 220,
                     child: ClipRRect(
-                      // 使用 ClipRRect 包裹 Image
-                      borderRadius:
-                          BorderRadius.circular(8), // 设置相同的 BorderRadius
+                      borderRadius: BorderRadius.circular(8),
                       child: _image != null
                           ? Image.file(
                               _image!,

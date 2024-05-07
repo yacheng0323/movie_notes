@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+final textGetterProvider = Provider<TextGetter>((ref) {
+  // final context = ref.container.read(BuildContext);
+  return TextGetter(TextTheme());
+});
+
 class TextGetter {
-  final BuildContext context;
+  final TextTheme textTheme;
 
-  TextGetter(this.context);
+  TextGetter(this.textTheme);
+  // final BuildContext context;
 
-  TextTheme get _textTheme => Theme.of(context).textTheme;
-  TextTheme get _googleTextTheme => GoogleFonts.notoSansTextTheme(_textTheme);
+  // TextGetter(this.context);
+
+  // TextTheme get _textTheme => Theme.of(context).textTheme;
+  TextTheme get _googleTextTheme => GoogleFonts.notoSansTextTheme(textTheme);
 
   TextStyle? get displayLarge => _googleTextTheme.displayLarge?.copyWith(
       fontWeight: FontWeight.w400,

@@ -1,6 +1,9 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_notes/database/database_service.dart';
 import 'package:movie_notes/entities/record_data.dart';
 import 'package:sqflite/sqlite_api.dart';
+
+final recordDBProvider = StateProvider<RecordDB>((ref) => RecordDB());
 
 class RecordDB {
   final tableName = "Records";
@@ -22,12 +25,12 @@ class RecordDB {
     required int datetime,
     String? content,
     required String theater,
-    String? filename,
+    String? imagepath,
   }) async {
     final database = await DatabaseService().database;
     return await database.rawInsert(
         '''INSERT INTO $tableName (title,datetime,content,theater,imagepath) VALUES (?,?,?,?,?)''',
-        [title, datetime, content, theater, filename]);
+        [title, datetime, content, theater, imagepath]);
   }
 
   Future<List<RecordData>> fetchAll() async {
@@ -40,11 +43,18 @@ class RecordDB {
   }
 
   //* 如果有搜尋需求?
-  // Future<RecordData> fetchById(int id) async {
-  //   final database = await DatabaseService().database;
-  //   final record = await database.rawQuery('''SELECT * from $tableName WHERE id = ?''',[id]);
-  //   return RecordData.fromSqfliteDatabase(record.first);
-  // }
+  Future<RecordData> fetchById(int id) async {
+    final database = await DatabaseService().database;
+    final record = await database
+        .rawQuery('''SELECT * from $tableName WHERE id = ?''', [id]);
+    return RecordData.fromSqfliteDatabase(record.first);
+  }
+
+  Future<int> insertData(Map<String, dynamic> data) async {
+    final db = await DatabaseService().database;
+    int id = await db.insert(tableName, data);
+    return id;
+  }
 
   Future<int> update({
     required int id,
@@ -79,6 +89,4 @@ class RecordDB {
     final database = await DatabaseService().database;
     await database.delete(tableName);
   }
-
-  // Future<void>
 }
