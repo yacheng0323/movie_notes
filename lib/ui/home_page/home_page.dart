@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:movie_notes/entities/record_data.dart';
 import 'package:movie_notes/routes/app_router.gr.dart';
-import 'package:movie_notes/ui/home_page/controllers/home_controller.dart';
+import 'package:movie_notes/ui/home_page/notifier/home_page_notifier.dart';
 import 'package:movie_notes/ui/record_page/record_page.dart';
 import 'package:movie_notes/utils/palette.dart';
 import 'package:movie_notes/utils/text_getter.dart';

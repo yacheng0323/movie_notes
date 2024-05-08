@@ -4,19 +4,29 @@ import 'package:movie_notes/routes/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  // await Injection().init();
   runApp(
     const ProviderScope(child: MyApp()),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  AppRouter appRouter = AppRouter();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    AppRouter appRouter = AppRouter();
-
     return MaterialApp.router(
       routerConfig: appRouter.config(),
       title: 'Flutter Demo',
@@ -24,7 +34,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      // home: const HomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }

@@ -5,16 +5,15 @@ import 'package:movie_notes/entities/record_data.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 final homePageProvider =
-    StateNotifierProvider<HomePageController, AsyncValue<List<RecordData>>>(
+    StateNotifierProvider<HomePageNotifier, AsyncValue<List<RecordData>>>(
         (ref) {
-  return HomePageController(ref);
+  return HomePageNotifier(ref);
 });
 
-final class HomePageController
-    extends StateNotifier<AsyncValue<List<RecordData>>> {
+class HomePageNotifier extends StateNotifier<AsyncValue<List<RecordData>>> {
   final Ref _ref;
 
-  HomePageController(this._ref) : super(const AsyncValue.loading()) {
+  HomePageNotifier(this._ref) : super(const AsyncValue.loading()) {
     fetctRecords();
   }
 

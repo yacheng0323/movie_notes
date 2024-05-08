@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
@@ -10,19 +11,20 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_notes/database/record_db.dart';
 import 'package:movie_notes/entities/record_data.dart';
-import 'package:movie_notes/ui/record_page/controllers/record_controller.dart';
+import 'package:movie_notes/ui/record_page/notifier/record_page_notifier.dart';
+import 'package:movie_notes/utils/image_usecase.dart';
 import 'package:movie_notes/utils/palette.dart';
 import 'package:movie_notes/utils/text_getter.dart';
 import 'package:provider/provider.dart';
 
 @RoutePage()
 class RecordPage extends ConsumerStatefulWidget {
-  const RecordPage({super.key, this.recordData});
+  const RecordPage({Key? key, this.recordData}) : super(key: key);
 
   final RecordData? recordData;
 
   @override
-  ConsumerState<RecordPage> createState() => _RecordPageState();
+  _RecordPageState createState() => _RecordPageState();
 }
 
 class _RecordPageState extends ConsumerState<RecordPage> {
@@ -31,29 +33,28 @@ class _RecordPageState extends ConsumerState<RecordPage> {
   final theaterController = TextEditingController();
   final contentController = TextEditingController();
   DateTime? dateTime;
+  String? fileString;
 
-  File? _image;
-  final picker = ImagePicker();
-
-//Image Picker function to get image from gallery
   Future getImageFromGallery() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
     setState(() {
       if (pickedFile != null) {
-        _image = File(pickedFile.path);
-        print(_image);
+        File image = File(pickedFile.path);
+        fileString = ImageUsecase().imageToBase64(image);
       }
     });
   }
 
-//Image Picker function to get image from camera
   Future getImageFromCamera() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.camera);
 
     setState(() {
       if (pickedFile != null) {
-        _image = File(pickedFile.path);
+        File image = File(pickedFile.path);
+        fileString = ImageUsecase().imageToBase64(image);
       }
     });
   }
@@ -66,7 +67,7 @@ class _RecordPageState extends ConsumerState<RecordPage> {
       contentController.text = widget.recordData!.content ?? "";
       dateTime = DateTime.fromMillisecondsSinceEpoch(
           widget.recordData!.datetime * 1000);
-      _image = File(widget.recordData!.imagePath ?? "");
+      fileString = widget.recordData!.imagefile;
     }
     super.initState();
   }
@@ -75,8 +76,7 @@ class _RecordPageState extends ConsumerState<RecordPage> {
   Widget build(BuildContext context) {
     final palette = ref.watch<Palette>(paletteProvider);
     final textGetter = ref.watch<TextGetter>(textGetterProvider);
-    final ddd = ref.read(recordProvider.notifier);
-    final sss = ref.watch(recordDBProvider);
+    final ddd = ref.read(recordPageProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -94,13 +94,14 @@ class _RecordPageState extends ConsumerState<RecordPage> {
                 // TODO: 記得寫入DB
                 if (_formKey.currentState?.validate() == true) {
                   RecordData recordData = RecordData(
-                      title: titleController.text,
-                      datetime:
-                          ref.watch(dateTimeProvider).millisecondsSinceEpoch ~/
-                              1000,
-                      theater: theaterController.text,
-                      content: contentController.text,
-                      imagePath: _image?.path);
+                    title: titleController.text,
+                    datetime:
+                        ref.watch(dateTimeProvider).millisecondsSinceEpoch ~/
+                            1000,
+                    theater: theaterController.text,
+                    content: contentController.text,
+                    imagefile: fileString,
+                  );
                   await ddd.addRecord(record: recordData);
                 }
               },
@@ -222,9 +223,10 @@ class _RecordPageState extends ConsumerState<RecordPage> {
                     height: 220,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: _image != null
-                          ? Image.file(
-                              _image!,
+                      child: fileString != null
+                          ? Image.memory(
+                              base64Decode(fileString ?? ""),
+                              gaplessPlayback: true,
                               fit: BoxFit.cover,
                             )
                           : Column(

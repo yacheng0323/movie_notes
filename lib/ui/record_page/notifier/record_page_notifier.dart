@@ -4,17 +4,17 @@ import 'package:movie_notes/database/record_db.dart';
 import 'package:movie_notes/entities/record_data.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final recordProvider =
-    StateNotifierProvider<RecordController, AsyncValue<RecordData>>((ref) {
-  return RecordController(ref);
+final recordPageProvider =
+    StateNotifierProvider<RecordPageNotifier, AsyncValue<RecordData>>((ref) {
+  return RecordPageNotifier(ref);
 });
 
 final dateTimeProvider = StateProvider<DateTime>((ref) => DateTime.now());
 
-class RecordController extends StateNotifier<AsyncValue<RecordData>> {
+class RecordPageNotifier extends StateNotifier<AsyncValue<RecordData>> {
   final Ref _ref;
 
-  RecordController(this._ref) : super(const AsyncValue.loading());
+  RecordPageNotifier(this._ref) : super(const AsyncValue.loading());
 
   Future<void> fetchRecord({bool isRefreshing = false, String? title}) async {
     if (isRefreshing) state = const AsyncValue.loading();
@@ -36,7 +36,7 @@ class RecordController extends StateNotifier<AsyncValue<RecordData>> {
           datetime: record.datetime + 28800,
           theater: record.theater,
           content: record.content,
-          imagepath: record.imagePath);
+          imagefile: record.imagefile);
       state.whenData((value) {
         state = AsyncValue.data(value);
       });
@@ -55,7 +55,7 @@ class RecordController extends StateNotifier<AsyncValue<RecordData>> {
           datetime: record.datetime,
           theater: record.theater,
           content: record.content,
-          imagepath: record.imagePath);
+          imagefile: record.imagefile);
       state.whenData((value) {
         state = AsyncValue.data(value);
       });
@@ -67,6 +67,6 @@ class RecordController extends StateNotifier<AsyncValue<RecordData>> {
 
 enum RecordStatus {
   init,
-  success,
-  failed,
+  finish,
+  update,
 }

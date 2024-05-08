@@ -3,14 +3,14 @@ class RecordData {
   final int datetime;
   final String theater;
   final String? content;
-  final String? imagePath;
+  final String? imagefile;
 
   RecordData({
     required this.title,
     required this.datetime,
     required this.theater,
     this.content,
-    this.imagePath,
+    this.imagefile,
   });
 
   factory RecordData.fromSqfliteDatabase(Map<String, dynamic> map) =>
@@ -19,5 +19,5 @@ class RecordData {
           datetime: map["datetime"],
           theater: map["theater"],
           content: map["content"],
-          imagePath: map["imagepath"]);
+          imagefile: map["imagefile"]);
 }

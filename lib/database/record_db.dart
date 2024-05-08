@@ -15,7 +15,7 @@ class RecordDB {
       "datetime" INTEGER NOT NULL,
       "content" TEXT,
       "theater" VARCHAR(255) NOT NULL,
-      "imagepath" VARCHAR(255),
+      "imagefile" TEXT,
       PRIMARY KEY("id"  AUTOINCREMENT)
     );""");
   }
@@ -25,12 +25,12 @@ class RecordDB {
     required int datetime,
     String? content,
     required String theater,
-    String? imagepath,
+    String? imagefile,
   }) async {
     final database = await DatabaseService().database;
     return await database.rawInsert(
-        '''INSERT INTO $tableName (title,datetime,content,theater,imagepath) VALUES (?,?,?,?,?)''',
-        [title, datetime, content, theater, imagepath]);
+        '''INSERT INTO $tableName (title,datetime,content,theater,imagefile) VALUES (?,?,?,?,?)''',
+        [title, datetime, content, theater, imagefile]);
   }
 
   Future<List<RecordData>> fetchAll() async {
@@ -62,7 +62,7 @@ class RecordDB {
     required int? datetime,
     String? content,
     required String? theater,
-    String? imagepath,
+    String? imagefile,
   }) async {
     final database = await DatabaseService().database;
     return await database.update(
@@ -72,7 +72,7 @@ class RecordDB {
         "datetime": datetime,
         "content": content ?? null,
         "theater": theater,
-        "imagepath": imagepath ?? null,
+        "imagefile": imagefile ?? null,
       },
       where: 'id = ?',
       conflictAlgorithm: ConflictAlgorithm.rollback,
