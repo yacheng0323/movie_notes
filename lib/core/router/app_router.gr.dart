@@ -11,8 +11,10 @@
 import 'package:auto_route/auto_route.dart' as _i3;
 import 'package:flutter/cupertino.dart' as _i4;
 import 'package:movie_notes/entities/record_data.dart' as _i5;
-import 'package:movie_notes/ui/home_page/home_page.dart' as _i1;
-import 'package:movie_notes/ui/record_page/record_page.dart' as _i2;
+import 'package:movie_notes/feature/home_page/presentation/home_page.dart'
+    as _i1;
+import 'package:movie_notes/feature/record_page/presentation/record_page.dart'
+    as _i2;
 
 abstract class $AppRouter extends _i3.RootStackRouter {
   $AppRouter({super.navigatorKey});

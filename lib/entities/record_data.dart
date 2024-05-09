@@ -13,6 +13,16 @@ class RecordData {
     this.imagefile,
   });
 
+  Map<String, dynamic> toMap() {
+    return {
+      "title": title,
+      "datetime": datetime,
+      "theater": theater,
+      "content": content,
+      "imagefile": imagefile,
+    };
+  }
+
   factory RecordData.fromSqfliteDatabase(Map<String, dynamic> map) =>
       RecordData(
           title: map["title"],

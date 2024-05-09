@@ -1,15 +1,13 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_notes/database/database_service.dart';
 import 'package:movie_notes/entities/record_data.dart';
 import 'package:sqflite/sqlite_api.dart';
-
-final recordDBProvider = StateProvider<RecordDB>((ref) => RecordDB());
 
 class RecordDB {
   final tableName = "Records";
 
   Future<void> createTable(Database database) async {
-    await database.execute("""CREATE TABLE IF NOT EXISTS $tableName (
+    try {
+      await database.execute("""CREATE TABLE IF NOT EXISTS $tableName (
       "id"  INTEGER NOT NULL,
       "title" VARCHAR(255) NOT NULL,
       "datetime" INTEGER NOT NULL,
@@ -18,8 +16,12 @@ class RecordDB {
       "imagefile" TEXT,
       PRIMARY KEY("id"  AUTOINCREMENT)
     );""");
+    } catch (err, s) {
+      throw Error.throwWithStackTrace(err, s);
+    }
   }
 
+  //* 建立一筆資料
   Future<int> create({
     required String title,
     required int datetime,
@@ -27,33 +29,59 @@ class RecordDB {
     required String theater,
     String? imagefile,
   }) async {
-    final database = await DatabaseService().database;
-    return await database.rawInsert(
-        '''INSERT INTO $tableName (title,datetime,content,theater,imagefile) VALUES (?,?,?,?,?)''',
-        [title, datetime, content, theater, imagefile]);
+    try {
+      final database = await DatabaseService().database;
+      return await database.rawInsert(
+          '''INSERT INTO $tableName (title,datetime,content,theater,imagefile) VALUES (?,?,?,?,?)''',
+          [title, datetime, content, theater, imagefile]);
+    } catch (err, s) {
+      throw Error.throwWithStackTrace(err, s);
+    }
   }
 
   Future<List<RecordData>> fetchAll() async {
-    final database = await DatabaseService().database;
-    final records = await database
-        .rawQuery('''SELECT * from $tableName ORDER BY datetime DESC''');
-    return records
-        .map((record) => RecordData.fromSqfliteDatabase(record))
-        .toList();
+    try {
+      final database = await DatabaseService().database;
+      final records = await database
+          .rawQuery('''SELECT * from $tableName ORDER BY datetime DESC''');
+      return records
+          .map((record) => RecordData.fromSqfliteDatabase(record))
+          .toList();
+    } catch (err, s) {
+      throw Error.throwWithStackTrace(err, s);
+    }
   }
 
   //* 如果有搜尋需求?
   Future<RecordData> fetchById(int id) async {
-    final database = await DatabaseService().database;
-    final record = await database
-        .rawQuery('''SELECT * from $tableName WHERE id = ?''', [id]);
-    return RecordData.fromSqfliteDatabase(record.first);
+    try {
+      final database = await DatabaseService().database;
+      final record = await database
+          .rawQuery('''SELECT * from $tableName WHERE id = ?''', [id]);
+      return RecordData.fromSqfliteDatabase(record.first);
+    } catch (err, s) {
+      throw Error.throwWithStackTrace(err, s);
+    }
   }
 
-  Future<int> insertData(Map<String, dynamic> data) async {
-    final db = await DatabaseService().database;
-    int id = await db.insert(tableName, data);
-    return id;
+  //* 回傳id
+  Future<int?> getId(String title) async {
+    try {
+      final db = await DatabaseService().database;
+      List<Map<String, dynamic>> result = await db.query(
+        tableName,
+        where: "title = ?",
+        whereArgs: [title],
+        columns: ["id"],
+      );
+      if (result.isNotEmpty) {
+        return result.first["id"] as int?;
+      } else {
+        return null;
+      }
+    } catch (err, s) {
+      throw Error.throwWithStackTrace(err, s);
+    }
   }
 
   Future<int> update({
@@ -64,29 +92,50 @@ class RecordDB {
     required String? theater,
     String? imagefile,
   }) async {
-    final database = await DatabaseService().database;
-    return await database.update(
-      tableName,
-      {
-        "title": title,
-        "datetime": datetime,
-        "content": content ?? null,
-        "theater": theater,
-        "imagefile": imagefile ?? null,
-      },
-      where: 'id = ?',
-      conflictAlgorithm: ConflictAlgorithm.rollback,
-      whereArgs: [id],
-    );
+    try {
+      final database = await DatabaseService().database;
+      final Map<String, dynamic> updatedData = {};
+
+      if (title != null) updatedData["title"] = title;
+      if (datetime != null) updatedData["datetime"] = datetime;
+      if (content != null) updatedData["content"] = content;
+      if (theater != null) updatedData["theater"] = theater;
+      if (imagefile != null) updatedData["imagefile"] = imagefile;
+
+      return await database.rawUpdate(
+          '''UPDATE $tableName SET title = ?, datetime = ?,content = ?,theater = ?,imagefile = ? where id = ?''',
+          [title, datetime, content, theater, imagefile, id]);
+    } catch (err, s) {
+      throw Error.throwWithStackTrace(err, s);
+    }
   }
 
   Future<void> delete(int id) async {
-    final database = await DatabaseService().database;
-    await database.rawDelete('''DELETE FROM $tableName WHERE id = ?''', [id]);
+    try {
+      final database = await DatabaseService().database;
+      await database.rawDelete('''DELETE FROM $tableName WHERE id = ?''', [id]);
+    } catch (err, s) {
+      throw Error.throwWithStackTrace(err, s);
+    }
   }
 
-  Future<void> deleteAll() async {
-    final database = await DatabaseService().database;
-    await database.delete(tableName);
+  //* 刪除資料表中所有資料
+  Future<void> deleteAllData() async {
+    try {
+      final database = await DatabaseService().database;
+      await database.delete(tableName);
+    } catch (err, s) {
+      throw Error.throwWithStackTrace(err, s);
+    }
+  }
+
+  //* 刪除整個資料表
+  Future<void> deleteTable() async {
+    try {
+      final database = await DatabaseService().database;
+      await database.execute("DROP TABLE $tableName");
+    } catch (err, s) {
+      throw Error.throwWithStackTrace(err, s);
+    }
   }
 }
