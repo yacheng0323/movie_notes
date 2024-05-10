@@ -28,11 +28,17 @@ class HomePageProvider extends ChangeNotifier {
     }
   }
 
-  // Future<void> deleteData(RecordData data) async {
-  // final id =
-  // await _ref.watch(recordDBProvider).insertData({"title": data.title});
-  // await _ref.watch(recordDBProvider).delete(id);
-  // }
+  Future<void> deleteData(RecordData data) async {
+    int? id = await recordDBProvider.getId(data);
+
+    if (id != null) {
+      await recordDBProvider.deleteRecord(data, id);
+    }
+
+    _records = await recordDBProvider.fetchRecords();
+
+    notifyListeners();
+  }
 }
 
 enum HomePageStatus {

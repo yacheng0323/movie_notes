@@ -1,13 +1,16 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:movie_notes/core/router/app_router.gr.dart';
+import 'package:movie_notes/entities/record_data.dart';
 import 'package:movie_notes/feature/home_page/domain/provider/home_page_provider.dart';
 import 'package:movie_notes/feature/record_page/domain/provider/record_page_provider.dart';
 import 'package:movie_notes/utils/palette.dart';
 import 'package:movie_notes/utils/text_getter.dart';
 import 'package:provider/provider.dart';
+import 'package:searchable_listview/searchable_listview.dart';
 
 @RoutePage()
 class HomePage extends StatefulWidget {
@@ -19,6 +22,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final HomePageProvider homePageProvider;
+  TextEditingController searchbarController = TextEditingController();
+  var focusNode = FocusNode();
 
   @override
   void initState() {
@@ -68,7 +73,6 @@ class _HomePageState extends State<HomePage> {
           ),
           Consumer<HomePageProvider>(
             builder: (context, provider, child) {
-              final items = provider.records;
               Widget widget;
               switch (provider.status) {
                 case HomePageStatus.init:
@@ -77,174 +81,181 @@ class _HomePageState extends State<HomePage> {
 
                 case HomePageStatus.showResult:
                   widget = Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-                    child: SearchAnchor(
-                        viewShape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        isFullScreen: false,
-                        viewElevation: 0,
-                        builder: (context, controller) {
-                          return SearchBar(
-                            controller: controller,
-                            constraints: const BoxConstraints(minHeight: 40),
-                            hintText: "搜尋",
-                            hintStyle: MaterialStatePropertyAll(
-                                textgetter.bodyLarge?.copyWith(
-                                    color: const Color(0xffAAAAAA),
-                                    fontSize: 18)),
-                            leading: const Icon(
-                              Icons.search,
-                              color: Color(0xffAAAAAA),
-                              size: 24,
-                            ),
-                            elevation: const MaterialStatePropertyAll(0),
-                            backgroundColor: MaterialStatePropertyAll(
-                                palette.searchBarColor),
-                            shape: MaterialStatePropertyAll(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8))),
-                            padding: const MaterialStatePropertyAll<EdgeInsets>(
-                              EdgeInsets.fromLTRB(12, 0, 0, 0),
-                            ),
-                            onTap: () async {
-                              controller.openView();
+                      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+                      child: SearchableList<RecordData>.sliver(
+                        initialList: homePageProvider.records,
+                        displayClearIcon: false,
+                        itemBuilder: (RecordData record) {
+                          final index =
+                              homePageProvider.records.indexOf(record);
+                          BorderRadiusGeometry borderRadius =
+                              BorderRadius.all(Radius.zero);
+                          if (index == 0) {
+                            borderRadius = BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8));
+                          } else if (index ==
+                              homePageProvider.records.length - 1) {
+                            borderRadius = BorderRadius.only(
+                                bottomLeft: Radius.circular(8),
+                                bottomRight: Radius.circular(8));
+                          }
+                          ;
+                          return Dismissible(
+                            confirmDismiss: (direction) async {
+                              return await showCupertinoDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return CupertinoAlertDialog(
+                                    title: const Text("確定刪除?"),
+                                    content: const Text("確定要刪除此筆紀錄嗎?"),
+                                    actions: <Widget>[
+                                      TextButton(
+                                          onPressed: () async {
+                                            await homePageProvider
+                                                .deleteData(record);
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text("刪除")),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(),
+                                        child: const Text("取消"),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             },
-                            onChanged: (value) {
-                              controller.openView();
-                            },
-                          );
-                        },
-                        suggestionsBuilder: (context, controller) async {
-                          return [
-                            items.isEmpty
-                                ? Container(
-                                    margin:
-                                        const EdgeInsets.fromLTRB(0, 20, 0, 0),
-                                    decoration: const BoxDecoration(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(8),
-                                        ),
-                                        color: Colors.white),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                            key: UniqueKey(),
+                            child: InkWell(
+                              onTap: () {
+                                context.read<RecordPageProvider>().cleanState();
+
+                                AutoRouter.of(context)
+                                    .push(RecordPageRoute(recordData: record));
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: borderRadius),
+                                padding:
+                                    const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                                child: Column(
+                                  children: [
+                                    Row(
                                       children: [
-                                        Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              55, 32, 55, 40),
-                                          child: const Image(
-                                            image: AssetImage(
-                                                "images/records_empty.png"),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              3,
+                                          child: Text(
+                                            record.title,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: textgetter.titleMedium
+                                                ?.copyWith(
+                                                    color: Color(0xff2E2E2E),
+                                                    fontWeight:
+                                                        FontWeight.w700),
                                           ),
                                         ),
-                                        Text("電影等待中...",
-                                            style: textgetter.headlineSmall
-                                                ?.copyWith(
-                                                    color: Color(0xffAAAAAA))),
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                        Text(
+                                          record.theater,
+                                          style: textgetter.bodyMedium
+                                              ?.copyWith(
+                                                  color: Color(0xffAAAAAA)),
+                                        )
                                       ],
                                     ),
-                                  )
-                                : ListView.builder(
-                                    scrollDirection: Axis.vertical,
-                                    shrinkWrap: true,
-                                    itemBuilder: (context, index) {
-                                      return Dismissible(
-                                        onDismissed: (direction) {
-                                          //* 刪除後要執行？
-                                        },
-                                        key: UniqueKey(),
-                                        child: ListTile(
-                                          hoverColor: Colors.white,
-                                          title: Padding(
-                                            padding: const EdgeInsets.fromLTRB(
-                                                0, 4, 0, 4),
-                                            child: Row(
-                                              children: [
-                                                SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width /
-                                                      3,
-                                                  child: Text(
-                                                    items[index].title,
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    style: textgetter
-                                                        .titleMedium
-                                                        ?.copyWith(
-                                                            color: Color(
-                                                                0xff2E2E2E),
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w700),
-                                                  ),
-                                                ),
-                                                const SizedBox(
-                                                  width: 8,
-                                                ),
-                                                Text(
-                                                  items[index].theater,
-                                                  style: textgetter.bodyMedium
-                                                      ?.copyWith(
-                                                          color: Color(
-                                                              0xffAAAAAA)),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          subtitle: Row(
-                                            children: [
-                                              Text(
-                                                "${DateFormat("yyyy/MM/dd HH:mm").format(DateTime.fromMillisecondsSinceEpoch(items[index].datetime * 1000))}",
-                                                style: textgetter.bodyMedium
-                                                    ?.copyWith(
-                                                        color:
-                                                            Color(0xffAAAAAA)),
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Expanded(
-                                                child: Text(
-                                                  (items[index].content ?? "")
-                                                      .replaceAll('\n', ''),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: textgetter.bodyMedium
-                                                      ?.copyWith(
-                                                          color: Color(
-                                                              0xffAAAAAA)),
-                                                ),
-                                              ),
-                                              const Icon(
-                                                Symbols.edit_square_rounded,
-                                                size: 20,
-                                                color: Color(0xff7C27D1),
-                                              ),
-                                            ],
-                                          ),
-                                          onTap: () {
-                                            controller.closeView("");
-                                            context
-                                                .read<RecordPageProvider>()
-                                                .cleanState();
-
-                                            AutoRouter.of(context).push(
-                                                RecordPageRoute(
-                                                    recordData: items[index]));
-                                          },
+                                    Padding(padding: EdgeInsets.all(4)),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "${DateFormat("yyyy/MM/dd HH:mm").format(DateTime.fromMillisecondsSinceEpoch(record.datetime * 1000))}",
+                                          style: textgetter.bodyMedium
+                                              ?.copyWith(
+                                                  color: Color(0xffAAAAAA)),
                                         ),
-                                      );
-                                    },
-                                    itemCount: items.length,
-                                  )
-                          ];
-                        }),
-                  );
+                                        SizedBox(
+                                          width: 20,
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            (record.content ?? "")
+                                                .replaceAll('\n', ''),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: textgetter.bodyMedium
+                                                ?.copyWith(
+                                                    color: Color(0xffAAAAAA)),
+                                          ),
+                                        ),
+                                        const Icon(
+                                          Symbols.edit_square_rounded,
+                                          size: 20,
+                                          color: Color(0xff7C27D1),
+                                        ),
+                                      ],
+                                    ),
+                                    index != homePageProvider.records.length - 1
+                                        ? const Padding(
+                                            padding:
+                                                EdgeInsets.fromLTRB(0, 4, 0, 0),
+                                            child: Divider(
+                                              height: 1,
+                                              thickness: 1,
+                                            ),
+                                          )
+                                        : SizedBox.shrink(),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        filter: (value) => homePageProvider.records
+                            .where(
+                              (element) =>
+                                  element.title.toLowerCase().contains(value),
+                            )
+                            .toList(),
+                        emptyWidget: Container(
+                          padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8)),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Icon(
+                                Icons.error,
+                                color: Colors.red,
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text('找不到相符的內容喔！')
+                            ],
+                          ),
+                        ),
+                        inputDecoration: InputDecoration(
+                          hintText: "搜尋",
+                          fillColor: Color(0xffECECEC),
+                          filled: true,
+                          prefixIcon: Icon(Icons.search),
+                          prefixIconColor: Color(0xffAAAAAA),
+                          contentPadding: EdgeInsets.fromLTRB(16, 8, 0, 8),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8))),
+                        ),
+                      ));
                   break;
                 case HomePageStatus.loading:
                   widget = Align(
@@ -270,9 +281,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   );
-
                   break;
-
                 case HomePageStatus.failed:
                   widget = RefreshIndicator(
                       onRefresh: () async {

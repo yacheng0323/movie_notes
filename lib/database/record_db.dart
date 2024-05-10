@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:movie_notes/database/database_service.dart';
 import 'package:movie_notes/entities/record_data.dart';
 import 'package:sqflite/sqlite_api.dart';

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:movie_notes/database/record_db.dart';
 import 'package:movie_notes/entities/record_data.dart';
@@ -45,6 +47,14 @@ class RecordDBProvider extends ChangeNotifier {
           theater: item["theater"],
           content: item["content"],
           imagefile: item["imagefile"]);
+    } catch (err, s) {
+      throw Error.throwWithStackTrace(err, s);
+    }
+  }
+
+  Future<void> deleteRecord(RecordData record, int id) async {
+    try {
+      await _recordDB.delete(id);
     } catch (err, s) {
       throw Error.throwWithStackTrace(err, s);
     }

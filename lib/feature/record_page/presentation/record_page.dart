@@ -79,14 +79,14 @@ class _RecordPageState extends State<RecordPage> {
                       content: contentController.text,
                       imagefile: recordPageProvider.imageFile);
                   if (widget.recordData != null) {
-                    recordPageProvider.updateRecord(
+                    await recordPageProvider.updateRecord(
                         record: recordData,
                         id: recordPageProvider.recordId ?? 0);
                   } else {
-                    recordPageProvider.addRecord(record: recordData);
+                    await recordPageProvider.addRecord(record: recordData);
                   }
 
-                  switch (recordPageProvider.status) {
+                  switch (context.read<RecordPageProvider>().status) {
                     case RecordPageStatus.addSuccess:
                       ShowSnackBarHelper.successSnackBar(context: context)
                           .showSnackbar("新增成功");
@@ -132,7 +132,7 @@ class _RecordPageState extends State<RecordPage> {
                     Text(
                       "時間",
                       style:
-                          textgetter.bodyLarge?.copyWith(color: Colors.black),
+                          textgetter.titleMedium?.copyWith(color: Colors.black),
                     ),
                     Expanded(
                         child: TextButton(
@@ -162,16 +162,32 @@ class _RecordPageState extends State<RecordPage> {
                     Text(
                       "劇院",
                       style:
-                          textgetter.bodyLarge?.copyWith(color: Colors.black),
+                          textgetter.titleMedium?.copyWith(color: Colors.black),
                     ),
                     const Padding(padding: EdgeInsets.all(12)),
                     Expanded(
-                        child: TextFormField(
-                      controller: theaterController,
-                      decoration: const InputDecoration(hintText: "請輸入劇院名稱"),
-                      validator: (value) {
-                        return value?.isEmpty == true ? "還沒輸入劇院名稱喔！" : null;
-                      },
+                        child: Container(
+                      // height: 40,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: TextFormField(
+                        controller: theaterController,
+                        style: textgetter.bodyMedium,
+                        decoration: const InputDecoration(
+                          hintText: "請輸入劇院名稱",
+                          filled: true,
+                          fillColor: Color(0xffECECEC),
+                          contentPadding: EdgeInsets.fromLTRB(12, 8, 8, 0),
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8))),
+                        ),
+                        validator: (value) {
+                          return value?.isEmpty == true ? "還沒輸入劇院名稱喔！" : null;
+                        },
+                      ),
                     )),
                   ],
                 ),
@@ -180,7 +196,7 @@ class _RecordPageState extends State<RecordPage> {
                   minLines: 1,
                   maxLines: 100,
                   decoration: const InputDecoration(
-                      hintText: "內容", border: InputBorder.none),
+                      hintText: "請輸入內容", border: InputBorder.none),
                 ),
                 const Padding(padding: EdgeInsets.all(4)),
                 GestureDetector(
