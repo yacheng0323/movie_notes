@@ -1,6 +1,8 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:movie_notes/database/record_db_provider.dart';
 import 'package:movie_notes/entities/record_data.dart';
@@ -56,8 +58,16 @@ class RecordPageProvider extends ChangeNotifier {
         await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      File image = File(pickedFile.path);
-      _imageFile = ImageUsecase().imageToBase64(image);
+      File? image = File(pickedFile.path);
+      // final originalFileSize = image.lengthSync();
+      // final originalkb = originalFileSize / 1024;
+      // log("原始圖片大小 : $originalkb KB");
+
+      final cropimage = await cropImage(pickerImage: image);
+      // log('圖片裁切過後 : ${cropimage!.lengthSync() / 1024} KB');
+
+      _imageFile = ImageUsecase().imageToBase64(cropimage ?? image);
+
       notifyListeners();
     }
   }
@@ -67,10 +77,31 @@ class RecordPageProvider extends ChangeNotifier {
         await ImagePicker().pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
-      File image = File(pickedFile.path);
-      _imageFile = ImageUsecase().imageToBase64(image);
+      File? image = File(pickedFile.path);
+      // final originalFileSize = image.lengthSync();
+      // final originalkb = originalFileSize / 1024;
+      // log("原始圖片大小 : $originalkb KB");
+
+      final cropimage = await cropImage(pickerImage: image);
+      // log('圖片裁切過後 : ${cropimage!.lengthSync() / 1024} KB');
+
+      _imageFile = ImageUsecase().imageToBase64(cropimage ?? image);
+
       notifyListeners();
     }
+  }
+
+  Future<File?> cropImage({required File pickerImage}) async {
+    final cropped = await ImageCropper().cropImage(
+        sourcePath: pickerImage.path,
+        cropStyle: CropStyle.rectangle,
+        uiSettings: [IOSUiSettings(title: "Cropper")],
+        compressQuality: 100);
+
+    if (cropped != null) {
+      return File(cropped.path);
+    }
+    return null;
   }
 
   Future<void> setImageFromDB(String? newImageFile) async {

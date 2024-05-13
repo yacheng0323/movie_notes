@@ -212,7 +212,7 @@ class _RecordPageState extends State<RecordPage> {
                         title: const Text("請選擇上傳方式"),
                         actions: [
                           CupertinoActionSheetAction(
-                            child: const Text('相簿'),
+                            child: const Text('從圖片庫'),
                             onPressed: () {
                               Navigator.of(context).pop();
                               context
@@ -233,14 +233,13 @@ class _RecordPageState extends State<RecordPage> {
                       ),
                     );
                   },
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: palette.selectImageBgColor,
-                        borderRadius: BorderRadius.circular(8)),
-                    width: MediaQuery.of(context).size.width,
-                    height: 220,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
+                  child: AspectRatio(
+                    aspectRatio: 16 / 9,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: palette.selectImageBgColor,
+                          borderRadius: BorderRadius.circular(8)),
+                      width: MediaQuery.of(context).size.width,
                       child: recordPageProvider.imageFile != null
                           ? Image.memory(
                               base64Decode(context
