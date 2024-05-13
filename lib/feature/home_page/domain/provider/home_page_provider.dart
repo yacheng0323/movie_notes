@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:movie_notes/database/record_db.dart';
 import 'package:movie_notes/database/record_db_provider.dart';
 import 'package:movie_notes/entities/record_data.dart';
-import 'package:provider/provider.dart';
 
 RecordDBProvider recordDBProvider = RecordDBProvider();
 
@@ -21,7 +19,8 @@ class HomePageProvider extends ChangeNotifier {
       _records = await recordDBProvider.fetchRecords();
 
       status =
-          _records.isEmpty ? HomePageStatus.empty : HomePageStatus.showResult;
+          // _records.isEmpty ? HomePageStatus.empty :
+          HomePageStatus.showResult;
 
       notifyListeners();
     } catch (err) {
@@ -40,7 +39,8 @@ class HomePageProvider extends ChangeNotifier {
     _records = await recordDBProvider.fetchRecords();
 
     status =
-        _records.isEmpty ? HomePageStatus.empty : HomePageStatus.showResult;
+        // _records.isEmpty ? HomePageStatus.empty :
+        HomePageStatus.showResult;
 
     notifyListeners();
   }

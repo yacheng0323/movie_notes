@@ -31,9 +31,15 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     homePageProvider = Provider.of<HomePageProvider>(context, listen: false);
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       homePageProvider.fetchRecords();
+      searchbarController.text = "";
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -81,35 +87,35 @@ class _HomePageState extends State<HomePage> {
                   widget = const SizedBox.shrink();
                   break;
 
-                case HomePageStatus.empty:
-                  widget = Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8)),
-                    margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          height: MediaQuery.of(context).size.width * 0.7,
-                          child: Lottie.asset(
-                            'assets/lottie/no_data_found.json',
-                            fit: BoxFit.contain,
-                            frameRate: FrameRate.max,
-                          ),
-                        ),
-                        Padding(padding: EdgeInsets.all(4)),
-                        Text(
-                          "暫無記錄可供查看。",
-                          style: textgetter.titleMedium
-                              ?.copyWith(color: Color(0xffAAAAAA)),
-                        ),
-                      ],
-                    ),
-                  );
+                // case HomePageStatus.empty:
+                //   widget = Container(
+                //     width: MediaQuery.of(context).size.width,
+                //     height: MediaQuery.of(context).size.width,
+                //     decoration: BoxDecoration(
+                //         color: Colors.white,
+                //         borderRadius: BorderRadius.circular(8)),
+                //     margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                //     child: Column(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         SizedBox(
+                //           width: MediaQuery.of(context).size.width * 0.7,
+                //           height: MediaQuery.of(context).size.width * 0.7,
+                //           child: Lottie.asset(
+                //             'assets/lottie/no_data_found.json',
+                //             fit: BoxFit.contain,
+                //             frameRate: FrameRate.max,
+                //           ),
+                //         ),
+                //         Padding(padding: EdgeInsets.all(4)),
+                //         Text(
+                //           "暫無記錄可供查看。",
+                //           style: textgetter.titleMedium
+                //               ?.copyWith(color: Color(0xffAAAAAA)),
+                //         ),
+                //       ],
+                //     ),
+                //   );
 
                 case HomePageStatus.showResult:
                   widget = Padding(
@@ -133,7 +139,7 @@ class _HomePageState extends State<HomePage> {
                                 bottomLeft: Radius.circular(8),
                                 bottomRight: Radius.circular(8));
                           }
-                          ;
+
                           return Dismissible(
                             confirmDismiss: (direction) async {
                               return await showCupertinoDialog(
@@ -145,8 +151,11 @@ class _HomePageState extends State<HomePage> {
                                     actions: <Widget>[
                                       TextButton(
                                           onPressed: () async {
-                                            await homePageProvider
-                                                .deleteData(record);
+                                            if (mounted) {
+                                              await homePageProvider
+                                                  .deleteData(record);
+                                            }
+
                                             Navigator.of(context).pop();
                                           },
                                           child: const Text("刪除")),
@@ -161,99 +170,84 @@ class _HomePageState extends State<HomePage> {
                               );
                             },
                             key: UniqueKey(),
-                            child: InkWell(
-                              onTap: () {
-                                context.read<RecordPageProvider>().cleanState();
-
-                                AutoRouter.of(context)
-                                    .push(RecordPageRoute(recordData: record));
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: borderRadius),
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              3,
-                                          child: Text(
-                                            record.title,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: textgetter.titleMedium
-                                                ?.copyWith(
-                                                    color:
-                                                        const Color(0xff2E2E2E),
-                                                    fontWeight:
-                                                        FontWeight.w700),
-                                          ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: borderRadius),
+                              padding:
+                                  const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width /
+                                                3,
+                                        child: Text(
+                                          record.title,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: textgetter.titleMedium
+                                              ?.copyWith(
+                                                  color:
+                                                      const Color(0xff2E2E2E),
+                                                  fontWeight: FontWeight.w700),
                                         ),
-                                        const SizedBox(
-                                          width: 8,
-                                        ),
-                                        Text(
-                                          record.theater,
+                                      ),
+                                      const SizedBox(
+                                        width: 8,
+                                      ),
+                                      Text(
+                                        record.theater,
+                                        style: textgetter.bodyMedium?.copyWith(
+                                            color: const Color(0xffAAAAAA)),
+                                      )
+                                    ],
+                                  ),
+                                  const Padding(padding: EdgeInsets.all(4)),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        DateFormat("yyyy/MM/dd HH:mm").format(
+                                            DateTime.fromMillisecondsSinceEpoch(
+                                                record.datetime * 1000)),
+                                        style: textgetter.bodyMedium?.copyWith(
+                                            color: const Color(0xffAAAAAA)),
+                                      ),
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          (record.content ?? "")
+                                              .replaceAll('\n', ''),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                           style: textgetter.bodyMedium
                                               ?.copyWith(
                                                   color:
                                                       const Color(0xffAAAAAA)),
+                                        ),
+                                      ),
+                                      const Icon(
+                                        Symbols.edit_square_rounded,
+                                        size: 20,
+                                        color: Color(0xff7C27D1),
+                                      ),
+                                    ],
+                                  ),
+                                  index != homePageProvider.records.length - 1
+                                      ? const Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(0, 4, 0, 0),
+                                          child: Divider(
+                                            height: 1,
+                                            thickness: 1,
+                                          ),
                                         )
-                                      ],
-                                    ),
-                                    const Padding(padding: EdgeInsets.all(4)),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          DateFormat("yyyy/MM/dd HH:mm").format(
-                                              DateTime
-                                                  .fromMillisecondsSinceEpoch(
-                                                      record.datetime * 1000)),
-                                          style: textgetter.bodyMedium
-                                              ?.copyWith(
-                                                  color:
-                                                      const Color(0xffAAAAAA)),
-                                        ),
-                                        const SizedBox(
-                                          width: 20,
-                                        ),
-                                        Expanded(
-                                          child: Text(
-                                            (record.content ?? "")
-                                                .replaceAll('\n', ''),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: textgetter.bodyMedium
-                                                ?.copyWith(
-                                                    color: const Color(
-                                                        0xffAAAAAA)),
-                                          ),
-                                        ),
-                                        const Icon(
-                                          Symbols.edit_square_rounded,
-                                          size: 20,
-                                          color: Color(0xff7C27D1),
-                                        ),
-                                      ],
-                                    ),
-                                    index != homePageProvider.records.length - 1
-                                        ? const Padding(
-                                            padding:
-                                                EdgeInsets.fromLTRB(0, 4, 0, 0),
-                                            child: Divider(
-                                              height: 1,
-                                              thickness: 1,
-                                            ),
-                                          )
-                                        : const SizedBox.shrink(),
-                                  ],
-                                ),
+                                      : const SizedBox.shrink(),
+                                ],
                               ),
                             ),
                           );
@@ -264,6 +258,12 @@ class _HomePageState extends State<HomePage> {
                                   element.title.toLowerCase().contains(value),
                             )
                             .toList(),
+                        onItemSelected: (record) {
+                          context.read<RecordPageProvider>().cleanState();
+
+                          AutoRouter.of(context)
+                              .push(RecordPageRoute(recordData: record));
+                        },
                         emptyWidget: Container(
                           padding: EdgeInsets.fromLTRB(0, 24, 0, 24),
                           decoration: BoxDecoration(

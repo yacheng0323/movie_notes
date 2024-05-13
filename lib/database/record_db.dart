@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:get_it/get_it.dart';
 import 'package:movie_notes/database/database_service.dart';
 import 'package:movie_notes/entities/record_data.dart';
 import 'package:sqflite/sqlite_api.dart';
@@ -32,7 +33,7 @@ class RecordDB {
     String? imagefile,
   }) async {
     try {
-      final database = await DatabaseService().database;
+      final database = await GetIt.I.get<DatabaseService>().database;
       return await database.rawInsert(
           '''INSERT INTO $tableName (title,datetime,content,theater,imagefile) VALUES (?,?,?,?,?)''',
           [title, datetime, content, theater, imagefile]);
@@ -43,7 +44,7 @@ class RecordDB {
 
   Future<List<RecordData>> fetchAll() async {
     try {
-      final database = await DatabaseService().database;
+      final database = await GetIt.I.get<DatabaseService>().database;
       final records = await database
           .rawQuery('''SELECT * from $tableName ORDER BY datetime DESC''');
       return records
@@ -57,7 +58,7 @@ class RecordDB {
   //* 如果有搜尋需求?
   Future<RecordData> fetchById(int id) async {
     try {
-      final database = await DatabaseService().database;
+      final database = await GetIt.I.get<DatabaseService>().database;
       final record = await database
           .rawQuery('''SELECT * from $tableName WHERE id = ?''', [id]);
       return RecordData.fromSqfliteDatabase(record.first);
@@ -69,7 +70,7 @@ class RecordDB {
   //* 回傳id
   Future<int?> getId(String title) async {
     try {
-      final db = await DatabaseService().database;
+      final db = await GetIt.I.get<DatabaseService>().database;
       List<Map<String, dynamic>> result = await db.query(
         tableName,
         where: "title = ?",
@@ -95,7 +96,7 @@ class RecordDB {
     String? imagefile,
   }) async {
     try {
-      final database = await DatabaseService().database;
+      final database = await GetIt.I.get<DatabaseService>().database;
       final Map<String, dynamic> updatedData = {};
 
       if (title != null) updatedData["title"] = title;
@@ -114,7 +115,7 @@ class RecordDB {
 
   Future<void> delete(int id) async {
     try {
-      final database = await DatabaseService().database;
+      final database = await GetIt.I.get<DatabaseService>().database;
       await database.rawDelete('''DELETE FROM $tableName WHERE id = ?''', [id]);
     } catch (err, s) {
       throw Error.throwWithStackTrace(err, s);
@@ -124,7 +125,7 @@ class RecordDB {
   //* 刪除資料表中所有資料
   Future<void> deleteAllData() async {
     try {
-      final database = await DatabaseService().database;
+      final database = await GetIt.I.get<DatabaseService>().database;
       await database.delete(tableName);
     } catch (err, s) {
       throw Error.throwWithStackTrace(err, s);
@@ -134,7 +135,7 @@ class RecordDB {
   //* 刪除整個資料表
   Future<void> deleteTable() async {
     try {
-      final database = await DatabaseService().database;
+      final database = await GetIt.I.get<DatabaseService>().database;
       await database.execute("DROP TABLE $tableName");
     } catch (err, s) {
       throw Error.throwWithStackTrace(err, s);

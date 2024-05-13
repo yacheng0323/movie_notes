@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:movie_notes/core/injections.dart';
 import 'package:movie_notes/core/router/app_router.dart';
 import 'package:movie_notes/feature/home_page/domain/provider/home_page_provider.dart';
@@ -23,7 +24,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  AppRouter appRouter = AppRouter();
+  AppRouter appRouter = GetIt.I.get<AppRouter>();
 
   @override
   void initState() {
