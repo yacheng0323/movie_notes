@@ -1,9 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:movie_notes/core/router/app_router.gr.dart';
 import 'package:movie_notes/entities/record_data.dart';
@@ -98,14 +96,14 @@ class _HomePageState extends State<HomePage> {
                           final index =
                               homePageProvider.records.indexOf(record);
                           BorderRadiusGeometry borderRadius =
-                              BorderRadius.all(Radius.zero);
+                              const BorderRadius.all(Radius.zero);
                           if (index == 0) {
-                            borderRadius = BorderRadius.only(
+                            borderRadius = const BorderRadius.only(
                                 topLeft: Radius.circular(8),
                                 topRight: Radius.circular(8));
                           } else if (index ==
                               homePageProvider.records.length - 1) {
-                            borderRadius = BorderRadius.only(
+                            borderRadius = const BorderRadius.only(
                                 bottomLeft: Radius.circular(8),
                                 bottomRight: Radius.circular(8));
                           }
@@ -126,6 +124,7 @@ class _HomePageState extends State<HomePage> {
                                                   .deleteData(record);
                                             }
 
+                                            // ignore: use_build_context_synchronously
                                             Navigator.of(context).pop();
                                           },
                                           child: const Text("刪除")),
@@ -235,7 +234,7 @@ class _HomePageState extends State<HomePage> {
                               .push(RecordPageRoute(recordData: record));
                         },
                         emptyWidget: Container(
-                          padding: EdgeInsets.fromLTRB(0, 24, 0, 24),
+                          padding: const EdgeInsets.fromLTRB(0, 24, 0, 24),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8)),
@@ -246,35 +245,15 @@ class _HomePageState extends State<HomePage> {
                                   height: 220,
                                   child:
                                       Image.asset("images/records_empty.png")),
-                              Padding(padding: EdgeInsets.all(20)),
+                              const Padding(padding: EdgeInsets.all(20)),
                               Text(
                                 "電影等待中...",
                                 style: textgetter.bodyLarge
-                                    ?.copyWith(color: Color(0xffAAAAAA)),
+                                    ?.copyWith(color: const Color(0xffAAAAAA)),
                               ),
                             ],
                           ),
                         ),
-                        // : Container(
-                        //     padding:
-                        //         const EdgeInsets.fromLTRB(0, 16, 0, 16),
-                        //     decoration: BoxDecoration(
-                        //         color: Colors.white,
-                        //         borderRadius: BorderRadius.circular(8)),
-                        //     child: const Column(
-                        //       mainAxisAlignment: MainAxisAlignment.center,
-                        //       children: [
-                        //         Icon(
-                        //           Icons.error,
-                        //           color: Colors.red,
-                        //         ),
-                        //         SizedBox(
-                        //           height: 20,
-                        //         ),
-                        //         Text('找不到相符的內容喔！')
-                        //       ],
-                        //     ),
-                        //   ),
                         inputDecoration: const InputDecoration(
                           hintText: "搜尋",
                           fillColor: Color(0xffECECEC),

@@ -1,6 +1,4 @@
-import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -30,7 +28,7 @@ class RecordPageProvider extends ChangeNotifier {
       await recordDBProvider.addRecord(record);
       status = RecordPageStatus.addSuccess;
       notifyListeners();
-    } catch (err, s) {
+    } catch (err) {
       status = RecordPageStatus.addFailed;
       notifyListeners();
     }
@@ -42,7 +40,7 @@ class RecordPageProvider extends ChangeNotifier {
       await recordDBProvider.updateRecord(record, id);
       status = RecordPageStatus.updateSuccess;
       notifyListeners();
-    } catch (err, s) {
+    } catch (err) {
       status = RecordPageStatus.updateFailed;
       notifyListeners();
     }

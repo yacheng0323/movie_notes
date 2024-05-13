@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:movie_notes/database/record_db.dart';
 import 'package:movie_notes/entities/record_data.dart';
@@ -17,7 +15,7 @@ class RecordDBProvider extends ChangeNotifier {
 
   Future<void> addRecord(RecordData record) async {
     try {
-      await _recordDB.create(
+      await _recordDB.insert(
           title: record.title,
           datetime: record.datetime,
           content: record.content,

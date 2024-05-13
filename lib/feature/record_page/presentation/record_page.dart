@@ -15,15 +15,15 @@ import 'package:provider/provider.dart';
 
 @RoutePage()
 class RecordPage extends StatefulWidget {
-  const RecordPage({Key? key, this.recordData}) : super(key: key);
+  const RecordPage({super.key, this.recordData});
 
   final RecordData? recordData;
 
   @override
-  _RecordPageState createState() => _RecordPageState();
+  RecordPageState createState() => RecordPageState();
 }
 
-class _RecordPageState extends State<RecordPage> {
+class RecordPageState extends State<RecordPage> {
   final _formKey = GlobalKey<FormState>();
   final titleController = TextEditingController();
   final theaterController = TextEditingController();
@@ -34,7 +34,7 @@ class _RecordPageState extends State<RecordPage> {
   void initState() {
     recordPageProvider = context.read<RecordPageProvider>();
 
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.recordData != null) {
         titleController.text = widget.recordData!.title;
         theaterController.text = widget.recordData!.theater;
@@ -87,6 +87,7 @@ class _RecordPageState extends State<RecordPage> {
                     await recordPageProvider.addRecord(record: recordData);
                   }
 
+                  if (!context.mounted) return;
                   switch (context.read<RecordPageProvider>().status) {
                     case RecordPageStatus.addSuccess:
                       ShowSnackBarHelper.successSnackBar(context: context)
