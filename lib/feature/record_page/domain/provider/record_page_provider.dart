@@ -59,12 +59,7 @@ class RecordPageProvider extends ChangeNotifier {
 
     if (pickedFile != null) {
       File? image = File(pickedFile.path);
-      // final originalFileSize = image.lengthSync();
-      // final originalkb = originalFileSize / 1024;
-      // log("原始圖片大小 : $originalkb KB");
-
       final cropimage = await cropImage(pickerImage: image);
-      // log('圖片裁切過後 : ${cropimage!.lengthSync() / 1024} KB');
 
       _imageFile = ImageUsecase().imageToBase64(cropimage ?? image);
 
@@ -78,12 +73,7 @@ class RecordPageProvider extends ChangeNotifier {
 
     if (pickedFile != null) {
       File? image = File(pickedFile.path);
-      // final originalFileSize = image.lengthSync();
-      // final originalkb = originalFileSize / 1024;
-      // log("原始圖片大小 : $originalkb KB");
-
       final cropimage = await cropImage(pickerImage: image);
-      // log('圖片裁切過後 : ${cropimage!.lengthSync() / 1024} KB');
 
       _imageFile = ImageUsecase().imageToBase64(cropimage ?? image);
 

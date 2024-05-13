@@ -87,36 +87,6 @@ class _HomePageState extends State<HomePage> {
                   widget = const SizedBox.shrink();
                   break;
 
-                // case HomePageStatus.empty:
-                //   widget = Container(
-                //     width: MediaQuery.of(context).size.width,
-                //     height: MediaQuery.of(context).size.width,
-                //     decoration: BoxDecoration(
-                //         color: Colors.white,
-                //         borderRadius: BorderRadius.circular(8)),
-                //     margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-                //     child: Column(
-                //       mainAxisAlignment: MainAxisAlignment.center,
-                //       children: [
-                //         SizedBox(
-                //           width: MediaQuery.of(context).size.width * 0.7,
-                //           height: MediaQuery.of(context).size.width * 0.7,
-                //           child: Lottie.asset(
-                //             'assets/lottie/no_data_found.json',
-                //             fit: BoxFit.contain,
-                //             frameRate: FrameRate.max,
-                //           ),
-                //         ),
-                //         Padding(padding: EdgeInsets.all(4)),
-                //         Text(
-                //           "暫無記錄可供查看。",
-                //           style: textgetter.titleMedium
-                //               ?.copyWith(color: Color(0xffAAAAAA)),
-                //         ),
-                //       ],
-                //     ),
-                //   );
-
                 case HomePageStatus.showResult:
                   widget = Padding(
                       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
