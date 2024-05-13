@@ -25,6 +25,8 @@ dependencies:
   # riverpod_annotation: ^2.3.5
   intl: ^0.19.0
   searchable_listview: ^2.12.0
+  image_cropper: ^6.0.0
+  lottie: ^3.1.0 
   
 
 dev_dependencies:
@@ -42,5 +44,6 @@ flutter:
     - images/
     - images/2.0x/
     - images/3.0x/
+    - assets/lottie/
 
   

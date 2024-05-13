@@ -20,7 +20,9 @@ class HomePageProvider extends ChangeNotifier {
     try {
       _records = await recordDBProvider.fetchRecords();
 
-      status = HomePageStatus.showResult;
+      status =
+          _records.isEmpty ? HomePageStatus.empty : HomePageStatus.showResult;
+
       notifyListeners();
     } catch (err) {
       status = HomePageStatus.failed;
@@ -37,6 +39,9 @@ class HomePageProvider extends ChangeNotifier {
 
     _records = await recordDBProvider.fetchRecords();
 
+    status =
+        _records.isEmpty ? HomePageStatus.empty : HomePageStatus.showResult;
+
     notifyListeners();
   }
 }
@@ -46,4 +51,5 @@ enum HomePageStatus {
   loading,
   showResult,
   failed,
+  empty,
 }

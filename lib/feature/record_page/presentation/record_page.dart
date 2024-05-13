@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_notes/entities/record_data.dart';
@@ -59,7 +60,7 @@ class _RecordPageState extends State<RecordPage> {
       appBar: AppBar(
         backgroundColor: palette.appBarColor,
         centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           "電影記事本",
           style: textgetter.headlineSmall?.copyWith(
@@ -122,6 +123,7 @@ class _RecordPageState extends State<RecordPage> {
               children: [
                 TextFormField(
                   controller: titleController,
+                  inputFormatters: [LengthLimitingTextInputFormatter(200)],
                   decoration: const InputDecoration(hintText: "請輸入標題"),
                   validator: (value) {
                     return value?.isEmpty == true ? "還沒輸入標題喔！" : null;
@@ -174,6 +176,9 @@ class _RecordPageState extends State<RecordPage> {
                       child: TextFormField(
                         controller: theaterController,
                         style: textgetter.bodyMedium,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(200)
+                        ],
                         decoration: const InputDecoration(
                           hintText: "請輸入劇院名稱",
                           filled: true,
@@ -252,8 +257,8 @@ class _RecordPageState extends State<RecordPage> {
                                 const Padding(padding: EdgeInsets.all(3)),
                                 Text(
                                   "選擇圖片",
-                                  style: textgetter.bodyLarge
-                                      ?.copyWith(color: Color(0xffE6E6E6)),
+                                  style: textgetter.bodyLarge?.copyWith(
+                                      color: const Color(0xffE6E6E6)),
                                 ),
                               ],
                             ),

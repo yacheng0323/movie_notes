@@ -1,7 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:movie_notes/core/router/app_router.gr.dart';
 import 'package:movie_notes/entities/record_data.dart';
@@ -79,11 +81,42 @@ class _HomePageState extends State<HomePage> {
                   widget = const SizedBox.shrink();
                   break;
 
+                case HomePageStatus.empty:
+                  widget = Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8)),
+                    margin: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          height: MediaQuery.of(context).size.width * 0.7,
+                          child: Lottie.asset(
+                            'assets/lottie/no_data_found.json',
+                            fit: BoxFit.contain,
+                            frameRate: FrameRate.max,
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.all(4)),
+                        Text(
+                          "暫無記錄可供查看。",
+                          style: textgetter.titleMedium
+                              ?.copyWith(color: Color(0xffAAAAAA)),
+                        ),
+                      ],
+                    ),
+                  );
+
                 case HomePageStatus.showResult:
                   widget = Padding(
                       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
                       child: SearchableList<RecordData>.sliver(
                         initialList: homePageProvider.records,
+                        searchTextController: searchbarController,
                         displayClearIcon: false,
                         itemBuilder: (RecordData record) {
                           final index =
@@ -156,7 +189,8 @@ class _HomePageState extends State<HomePage> {
                                             overflow: TextOverflow.ellipsis,
                                             style: textgetter.titleMedium
                                                 ?.copyWith(
-                                                    color: Color(0xff2E2E2E),
+                                                    color:
+                                                        const Color(0xff2E2E2E),
                                                     fontWeight:
                                                         FontWeight.w700),
                                           ),
@@ -168,20 +202,25 @@ class _HomePageState extends State<HomePage> {
                                           record.theater,
                                           style: textgetter.bodyMedium
                                               ?.copyWith(
-                                                  color: Color(0xffAAAAAA)),
+                                                  color:
+                                                      const Color(0xffAAAAAA)),
                                         )
                                       ],
                                     ),
-                                    Padding(padding: EdgeInsets.all(4)),
+                                    const Padding(padding: EdgeInsets.all(4)),
                                     Row(
                                       children: [
                                         Text(
-                                          "${DateFormat("yyyy/MM/dd HH:mm").format(DateTime.fromMillisecondsSinceEpoch(record.datetime * 1000))}",
+                                          DateFormat("yyyy/MM/dd HH:mm").format(
+                                              DateTime
+                                                  .fromMillisecondsSinceEpoch(
+                                                      record.datetime * 1000)),
                                           style: textgetter.bodyMedium
                                               ?.copyWith(
-                                                  color: Color(0xffAAAAAA)),
+                                                  color:
+                                                      const Color(0xffAAAAAA)),
                                         ),
-                                        SizedBox(
+                                        const SizedBox(
                                           width: 20,
                                         ),
                                         Expanded(
@@ -192,7 +231,8 @@ class _HomePageState extends State<HomePage> {
                                             overflow: TextOverflow.ellipsis,
                                             style: textgetter.bodyMedium
                                                 ?.copyWith(
-                                                    color: Color(0xffAAAAAA)),
+                                                    color: const Color(
+                                                        0xffAAAAAA)),
                                           ),
                                         ),
                                         const Icon(
@@ -211,7 +251,7 @@ class _HomePageState extends State<HomePage> {
                                               thickness: 1,
                                             ),
                                           )
-                                        : SizedBox.shrink(),
+                                        : const SizedBox.shrink(),
                                   ],
                                 ),
                               ),
@@ -225,25 +265,47 @@ class _HomePageState extends State<HomePage> {
                             )
                             .toList(),
                         emptyWidget: Container(
-                          padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
+                          padding: EdgeInsets.fromLTRB(0, 24, 0, 24),
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8)),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(
-                                Icons.error,
-                                color: Colors.red,
-                              ),
+                            children: [
                               SizedBox(
-                                height: 20,
+                                  width: 220,
+                                  height: 220,
+                                  child:
+                                      Image.asset("images/records_empty.png")),
+                              Padding(padding: EdgeInsets.all(20)),
+                              Text(
+                                "電影等待中...",
+                                style: textgetter.bodyLarge
+                                    ?.copyWith(color: Color(0xffAAAAAA)),
                               ),
-                              Text('找不到相符的內容喔！')
                             ],
                           ),
                         ),
-                        inputDecoration: InputDecoration(
+                        // : Container(
+                        //     padding:
+                        //         const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                        //     decoration: BoxDecoration(
+                        //         color: Colors.white,
+                        //         borderRadius: BorderRadius.circular(8)),
+                        //     child: const Column(
+                        //       mainAxisAlignment: MainAxisAlignment.center,
+                        //       children: [
+                        //         Icon(
+                        //           Icons.error,
+                        //           color: Colors.red,
+                        //         ),
+                        //         SizedBox(
+                        //           height: 20,
+                        //         ),
+                        //         Text('找不到相符的內容喔！')
+                        //       ],
+                        //     ),
+                        //   ),
+                        inputDecoration: const InputDecoration(
                           hintText: "搜尋",
                           fillColor: Color(0xffECECEC),
                           filled: true,
@@ -261,7 +323,7 @@ class _HomePageState extends State<HomePage> {
                   widget = Align(
                     alignment: Alignment.center,
                     child: Container(
-                      margin: EdgeInsets.fromLTRB(24, 0, 24, 0),
+                      margin: const EdgeInsets.fromLTRB(24, 0, 24, 0),
                       height: 80,
                       padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
                       decoration:
@@ -288,10 +350,10 @@ class _HomePageState extends State<HomePage> {
                         provider.fetchRecords();
                       },
                       child: SingleChildScrollView(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        child: Container(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
                           height: MediaQuery.of(context).size.height / 2,
-                          child: Center(
+                          child: const Center(
                             child: Text("獲取資料失敗"),
                           ),
                         ),
