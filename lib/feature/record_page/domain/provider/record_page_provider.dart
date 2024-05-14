@@ -84,22 +84,21 @@ class RecordPageProvider extends ChangeNotifier {
       if (croppedImage != null) {
         imagepath = path.join(documentDirectory.path, relativePath);
         _imageFile = croppedImage;
+
+        log("croppedImage = ${croppedImage.lengthSync() / 1024} kb");
+
         await croppedImage.copy(imagepath);
       } else {
         imagepath = path.join(documentDirectory.path, relativePath);
         _imageFile = image;
+
+        log("image = ${image.lengthSync() / 1024} kb");
 
         await image.copy(imagepath);
       }
 
       _displayImagePath = imagepath;
       _databaseImagePath = relativePath;
-
-      if (croppedImage != null) {
-        log("croppedImage = ${croppedImage.lengthSync() / 1024} kb");
-      } else {
-        log("image = ${image.lengthSync() / 1024} kb");
-      }
 
       notifyListeners();
     }
