@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:movie_notes/database/record_db_provider.dart';
 import 'package:movie_notes/entities/record_data.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 RecordDBProvider recordDBProvider = RecordDBProvider();
 
@@ -20,9 +21,13 @@ class RecordPageProvider extends ChangeNotifier {
 
   int? get recordId => _recordId;
 
-  String? _imagePath;
+  String? _databaseImagePath;
 
-  String? get imagePath => _imagePath;
+  String? get databaseImagePath => _databaseImagePath;
+
+  String? _displayImagePath;
+
+  String? get displayImagePath => _displayImagePath;
 
   Future<void> addRecord({required RecordData record}) async {
     try {
@@ -54,36 +59,37 @@ class RecordPageProvider extends ChangeNotifier {
 
   Future<void> getImage({required bool fromCamera}) async {
     final pickedFile = await ImagePicker().pickImage(
-        source: fromCamera ? ImageSource.camera : ImageSource.gallery,
-        maxWidth: 1280,
-        maxHeight: 720);
+      source: fromCamera ? ImageSource.camera : ImageSource.gallery,
+      maxWidth: 1280,
+      maxHeight: 720,
+    );
 
     if (pickedFile != null) {
       File image = File(pickedFile.path);
-
       File? croppedImage = await cropImage(pickerImage: image);
 
       Directory documentDirectory = await getApplicationDocumentsDirectory();
-
-      String imagePath =
-          '${documentDirectory.path}/${DateTime.now().millisecondsSinceEpoch}.png';
+      String relativePath = '${DateTime.now().millisecondsSinceEpoch}.png';
+      String imagepath;
 
       if (croppedImage != null) {
-        await croppedImage.copy(imagePath);
-
-        _imagePath = imagePath;
-
-        log("croppedImage = ${croppedImage.lengthSync() / 1024} kb");
-
-        notifyListeners();
+        imagepath = path.join(documentDirectory.path, relativePath);
+        await croppedImage.copy(imagepath);
       } else {
-        await image.copy(imagePath);
-
-        _imagePath = imagePath;
-        log("image = ${image.lengthSync() / 1024} kb");
-
-        notifyListeners();
+        imagepath = path.join(documentDirectory.path, relativePath);
+        await image.copy(imagepath);
       }
+
+      _displayImagePath = imagepath;
+      _databaseImagePath = relativePath;
+
+      if (croppedImage != null) {
+        log("croppedImage = ${croppedImage.lengthSync() / 1024} kb");
+      } else {
+        log("image = ${image.lengthSync() / 1024} kb");
+      }
+
+      notifyListeners();
     }
   }
 
@@ -108,11 +114,15 @@ class RecordPageProvider extends ChangeNotifier {
 
   Future<void> setImageFromDB(String? newImageFile) async {
     if (newImageFile != null) {
-      _imagePath = newImageFile;
+      _databaseImagePath = newImageFile;
 
-      File imageFile = File(_imagePath!);
+      Directory documentDirectory = await getApplicationDocumentsDirectory();
+
+      File imageFile =
+          File(path.join(documentDirectory.path, _databaseImagePath));
 
       if (imageFile.existsSync()) {
+        _displayImagePath = imageFile.path;
         notifyListeners();
       } else {
         log('圖片文件不存在');
@@ -124,7 +134,8 @@ class RecordPageProvider extends ChangeNotifier {
 
   void cleanState() {
     _selectedDateTime = DateTime.now();
-    _imagePath = null;
+    _databaseImagePath = null;
+    _displayImagePath = null;
     notifyListeners();
   }
 

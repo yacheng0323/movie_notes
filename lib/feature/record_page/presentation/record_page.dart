@@ -78,7 +78,7 @@ class RecordPageState extends State<RecordPage> {
                           1000,
                       theater: theaterController.text,
                       content: contentController.text,
-                      imagepath: recordPageProvider.imagePath);
+                      imagepath: recordPageProvider.databaseImagePath);
                   if (widget.recordData != null) {
                     await recordPageProvider.updateRecord(
                         record: recordData,
@@ -243,11 +243,11 @@ class RecordPageState extends State<RecordPage> {
                       width: MediaQuery.of(context).size.width,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: recordPageProvider.imagePath != null
+                        child: recordPageProvider.displayImagePath != null
                             ? Image.file(
                                 File(context
                                     .watch<RecordPageProvider>()
-                                    .imagePath!),
+                                    .displayImagePath!),
                                 fit: BoxFit.cover,
                               )
                             : Column(
