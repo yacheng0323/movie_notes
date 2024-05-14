@@ -36,9 +36,9 @@ class RecordPageProvider extends ChangeNotifier {
   Future<void> addRecord({required RecordData record}) async {
     try {
       await recordDBProvider.addRecord(record);
-
       await handleTemporaryDirectory();
       await copyImageToDocumentDirectory();
+
       status = RecordPageStatus.addSuccess;
       notifyListeners();
     } catch (err) {
@@ -159,7 +159,13 @@ class RecordPageProvider extends ChangeNotifier {
   Future<void> handleTemporaryDirectory() async {
     Directory temporaryDirectory = await getTemporaryDirectory();
     if (temporaryDirectory.existsSync()) {
-      temporaryDirectory.deleteSync(recursive: true);
+      List<FileSystemEntity> files =
+          temporaryDirectory.listSync(recursive: false);
+      for (FileSystemEntity file in files) {
+        if (file is File) {
+          await file.delete();
+        }
+      }
     }
   }
 

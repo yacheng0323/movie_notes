@@ -92,8 +92,7 @@ class _HomePageState extends State<HomePage> {
                         itemBuilder: (RecordData record) {
                           final index =
                               homePageProvider.records.indexOf(record);
-                          BorderRadiusGeometry borderRadius =
-                              BorderRadius.circular(8);
+                          BorderRadiusGeometry borderRadius = BorderRadius.zero;
 
                           if (homePageProvider.records.length == 1) {
                             borderRadius =
