@@ -21,6 +21,10 @@ class RecordPageProvider extends ChangeNotifier {
 
   int? get recordId => _recordId;
 
+  File? _imageFile;
+
+  File? get imageFile => _imageFile;
+
   String? _databaseImagePath;
 
   String? get databaseImagePath => _databaseImagePath;
@@ -32,6 +36,9 @@ class RecordPageProvider extends ChangeNotifier {
   Future<void> addRecord({required RecordData record}) async {
     try {
       await recordDBProvider.addRecord(record);
+
+      await handleTemporaryDirectory();
+      await copyImageToDocumentDirectory();
       status = RecordPageStatus.addSuccess;
       notifyListeners();
     } catch (err) {
@@ -44,6 +51,8 @@ class RecordPageProvider extends ChangeNotifier {
       {required RecordData record, required int id}) async {
     try {
       await recordDBProvider.updateRecord(record, id);
+      await handleTemporaryDirectory();
+      await copyImageToDocumentDirectory();
       status = RecordPageStatus.updateSuccess;
       notifyListeners();
     } catch (err) {
@@ -68,15 +77,18 @@ class RecordPageProvider extends ChangeNotifier {
       File image = File(pickedFile.path);
       File? croppedImage = await cropImage(pickerImage: image);
 
-      Directory documentDirectory = await getApplicationDocumentsDirectory();
+      Directory documentDirectory = await getTemporaryDirectory();
       String relativePath = '${DateTime.now().millisecondsSinceEpoch}.png';
       String imagepath;
 
       if (croppedImage != null) {
         imagepath = path.join(documentDirectory.path, relativePath);
+        _imageFile = croppedImage;
         await croppedImage.copy(imagepath);
       } else {
         imagepath = path.join(documentDirectory.path, relativePath);
+        _imageFile = image;
+
         await image.copy(imagepath);
       }
 
@@ -142,6 +154,21 @@ class RecordPageProvider extends ChangeNotifier {
   Future<void> setRecordId(RecordData record) async {
     _recordId = await recordDBProvider.getId(record);
     notifyListeners();
+  }
+
+  Future<void> handleTemporaryDirectory() async {
+    Directory temporaryDirectory = await getTemporaryDirectory();
+    if (temporaryDirectory.existsSync()) {
+      temporaryDirectory.deleteSync(recursive: true);
+    }
+  }
+
+  Future<void> copyImageToDocumentDirectory() async {
+    if (_databaseImagePath != null && _imageFile != null) {
+      Directory documentDirectory = await getApplicationDocumentsDirectory();
+      await _imageFile!
+          .copy(path.join(documentDirectory.path, _databaseImagePath!));
+    }
   }
 }
 
