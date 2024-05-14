@@ -241,34 +241,28 @@ class RecordPageState extends State<RecordPage> {
                           color: palette.selectImageBgColor,
                           borderRadius: BorderRadius.circular(8)),
                       width: MediaQuery.of(context).size.width,
-                      child: recordPageProvider.imagePath != null
-                          ?
-                          // Image.memory(
-                          //     base64Decode(context
-                          //             .watch<RecordPageProvider>()
-                          //             .imagepath ??
-                          //         ""),
-                          //     gaplessPlayback: true,
-                          //     fit: BoxFit.cover,
-                          //   )
-                          Image.file(
-                              File(context
-                                  .watch<RecordPageProvider>()
-                                  .imagePath!),
-                              fit: BoxFit.cover,
-                            )
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset("images/selectImageBg.png"),
-                                const Padding(padding: EdgeInsets.all(3)),
-                                Text(
-                                  "選擇圖片",
-                                  style: textgetter.bodyLarge?.copyWith(
-                                      color: const Color(0xffE6E6E6)),
-                                ),
-                              ],
-                            ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: recordPageProvider.imagePath != null
+                            ? Image.file(
+                                File(context
+                                    .watch<RecordPageProvider>()
+                                    .imagePath!),
+                                fit: BoxFit.cover,
+                              )
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset("images/selectImageBg.png"),
+                                  const Padding(padding: EdgeInsets.all(3)),
+                                  Text(
+                                    "選擇圖片",
+                                    style: textgetter.bodyLarge?.copyWith(
+                                        color: const Color(0xffE6E6E6)),
+                                  ),
+                                ],
+                              ),
+                      ),
                     ),
                   ),
                 ),
