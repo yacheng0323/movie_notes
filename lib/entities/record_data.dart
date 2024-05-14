@@ -3,14 +3,14 @@ class RecordData {
   final int datetime;
   final String theater;
   final String? content;
-  final String? imagefile;
+  final String? imagepath;
 
   RecordData({
     required this.title,
     required this.datetime,
     required this.theater,
     this.content,
-    this.imagefile,
+    this.imagepath,
   });
 
   Map<String, dynamic> toMap() {
@@ -19,7 +19,7 @@ class RecordData {
       "datetime": datetime,
       "theater": theater,
       "content": content,
-      "imagefile": imagefile,
+      "imagepath": imagepath,
     };
   }
 
@@ -29,5 +29,5 @@ class RecordData {
           datetime: map["datetime"],
           theater: map["theater"],
           content: map["content"],
-          imagefile: map["imagefile"]);
+          imagepath: map["imagepath"]);
 }

@@ -14,7 +14,7 @@ class RecordDB {
       "datetime" INTEGER NOT NULL,
       "content" TEXT,
       "theater" VARCHAR(255) NOT NULL,
-      "imagefile" TEXT,
+      "imagepath" TEXT,
       PRIMARY KEY("id"  AUTOINCREMENT)
     );""");
     } catch (err, s) {
@@ -28,13 +28,13 @@ class RecordDB {
     required int datetime,
     String? content,
     required String theater,
-    String? imagefile,
+    String? imagepath,
   }) async {
     try {
       final database = await GetIt.I.get<DatabaseService>().database;
       return await database.rawInsert(
-          '''INSERT INTO $tableName (title,datetime,content,theater,imagefile) VALUES (?,?,?,?,?)''',
-          [title, datetime, content, theater, imagefile]);
+          '''INSERT INTO $tableName (title,datetime,content,theater,imagepath) VALUES (?,?,?,?,?)''',
+          [title, datetime, content, theater, imagepath]);
     } catch (err, s) {
       throw Error.throwWithStackTrace(err, s);
     }
@@ -91,7 +91,7 @@ class RecordDB {
     required int? datetime,
     String? content,
     required String? theater,
-    String? imagefile,
+    String? imagepath,
   }) async {
     try {
       final database = await GetIt.I.get<DatabaseService>().database;
@@ -101,11 +101,11 @@ class RecordDB {
       if (datetime != null) updatedData["datetime"] = datetime;
       if (content != null) updatedData["content"] = content;
       if (theater != null) updatedData["theater"] = theater;
-      if (imagefile != null) updatedData["imagefile"] = imagefile;
+      if (imagepath != null) updatedData["imagepath"] = imagepath;
 
       return await database.rawUpdate(
-          '''UPDATE $tableName SET title = ?, datetime = ?,content = ?,theater = ?,imagefile = ? where id = ?''',
-          [title, datetime, content, theater, imagefile, id]);
+          '''UPDATE $tableName SET title = ?, datetime = ?,content = ?,theater = ?,imagepath = ? where id = ?''',
+          [title, datetime, content, theater, imagepath, id]);
     } catch (err, s) {
       throw Error.throwWithStackTrace(err, s);
     }

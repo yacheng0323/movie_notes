@@ -22,7 +22,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final HomePageProvider homePageProvider;
-  TextEditingController searchbarController = TextEditingController();
   var focusNode = FocusNode();
 
   @override
@@ -31,7 +30,6 @@ class _HomePageState extends State<HomePage> {
     homePageProvider = Provider.of<HomePageProvider>(context, listen: false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       homePageProvider.fetchRecords();
-      searchbarController.text = "";
     });
   }
 
@@ -90,22 +88,27 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
                       child: SearchableList<RecordData>.sliver(
                         initialList: homePageProvider.records,
-                        searchTextController: searchbarController,
                         displayClearIcon: false,
                         itemBuilder: (RecordData record) {
                           final index =
                               homePageProvider.records.indexOf(record);
                           BorderRadiusGeometry borderRadius =
-                              const BorderRadius.all(Radius.zero);
-                          if (index == 0) {
+                              BorderRadius.circular(8);
+
+                          if (homePageProvider.records.length == 1) {
+                            borderRadius =
+                                const BorderRadius.all(Radius.circular(8));
+                          } else if (index == 0) {
                             borderRadius = const BorderRadius.only(
-                                topLeft: Radius.circular(8),
-                                topRight: Radius.circular(8));
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8),
+                            );
                           } else if (index ==
                               homePageProvider.records.length - 1) {
                             borderRadius = const BorderRadius.only(
-                                bottomLeft: Radius.circular(8),
-                                bottomRight: Radius.circular(8));
+                              bottomLeft: Radius.circular(8),
+                              bottomRight: Radius.circular(8),
+                            );
                           }
 
                           return Dismissible(

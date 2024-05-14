@@ -15,7 +15,7 @@ void main() {
       "datetime" INTEGER NOT NULL,
       "content" TEXT,
       "theater" VARCHAR(255) NOT NULL,
-      "imagefile" TEXT,
+      "imagepath" TEXT,
       PRIMARY KEY("id"  AUTOINCREMENT)
     );""");
       // await

@@ -42,12 +42,8 @@ class ShowSnackBarHelper {
         backgroundColor: Colors.transparent,
         elevation: 0,
         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-        // margin: EdgeInsets.zero,
-        // padding: EdgeInsets.zero,
-
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.fixed,
-        // width: MediaQuery.of(context).size.width,
         content: Padding(
           padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
           child: InkWell(

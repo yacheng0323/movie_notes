@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +43,7 @@ class RecordPageState extends State<RecordPage> {
         recordPageProvider.setSelectedDateTime(
             DateTime.fromMillisecondsSinceEpoch(
                 widget.recordData!.datetime * 1000));
-        recordPageProvider.setImageFromDB(widget.recordData!.imagefile);
+        recordPageProvider.setImageFromDB(widget.recordData!.imagepath);
         recordPageProvider.setRecordId(widget.recordData!);
       }
     });
@@ -78,7 +78,7 @@ class RecordPageState extends State<RecordPage> {
                           1000,
                       theater: theaterController.text,
                       content: contentController.text,
-                      imagefile: recordPageProvider.imageFile);
+                      imagepath: recordPageProvider.imagePath);
                   if (widget.recordData != null) {
                     await recordPageProvider.updateRecord(
                         record: recordData,
@@ -218,7 +218,7 @@ class RecordPageState extends State<RecordPage> {
                               Navigator.of(context).pop();
                               context
                                   .read<RecordPageProvider>()
-                                  .getImageFromGallery();
+                                  .getImage(fromCamera: false);
                             },
                           ),
                           CupertinoActionSheetAction(
@@ -227,7 +227,7 @@ class RecordPageState extends State<RecordPage> {
                               Navigator.of(context).pop();
                               context
                                   .read<RecordPageProvider>()
-                                  .getImageFromCamera();
+                                  .getImage(fromCamera: true);
                             },
                           ),
                         ],
@@ -241,13 +241,20 @@ class RecordPageState extends State<RecordPage> {
                           color: palette.selectImageBgColor,
                           borderRadius: BorderRadius.circular(8)),
                       width: MediaQuery.of(context).size.width,
-                      child: recordPageProvider.imageFile != null
-                          ? Image.memory(
-                              base64Decode(context
-                                      .watch<RecordPageProvider>()
-                                      .imageFile ??
-                                  ""),
-                              gaplessPlayback: true,
+                      child: recordPageProvider.imagePath != null
+                          ?
+                          // Image.memory(
+                          //     base64Decode(context
+                          //             .watch<RecordPageProvider>()
+                          //             .imagepath ??
+                          //         ""),
+                          //     gaplessPlayback: true,
+                          //     fit: BoxFit.cover,
+                          //   )
+                          Image.file(
+                              File(context
+                                  .watch<RecordPageProvider>()
+                                  .imagePath!),
                               fit: BoxFit.cover,
                             )
                           : Column(

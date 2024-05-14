@@ -20,7 +20,7 @@ class RecordDBProvider extends ChangeNotifier {
           datetime: record.datetime,
           content: record.content,
           theater: record.theater,
-          imagefile: record.imagefile);
+          imagepath: record.imagepath);
     } catch (err, s) {
       throw Error.throwWithStackTrace(err, s);
     }
@@ -44,7 +44,7 @@ class RecordDBProvider extends ChangeNotifier {
           datetime: item["datetime"],
           theater: item["theater"],
           content: item["content"],
-          imagefile: item["imagefile"]);
+          imagepath: item["imagepath"]);
     } catch (err, s) {
       throw Error.throwWithStackTrace(err, s);
     }
