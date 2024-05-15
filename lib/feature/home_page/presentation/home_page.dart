@@ -260,8 +260,9 @@ class _HomePageState extends State<HomePage> {
                                   AutoRouter.of(context)
                                       .push(RecordPageRoute(recordData: record))
                                       .then((value) {
-                                    if (value == true)
+                                    if (value == true) {
                                       homePageProvider.fetchRecords();
+                                    }
                                   });
                                 },
                                 emptyWidget: Container(

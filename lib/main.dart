@@ -2,11 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:movie_notes/core/injections.dart';
 import 'package:movie_notes/core/router/app_router.dart';
-import 'package:movie_notes/feature/home_page/domain/provider/home_page_provider.dart';
-import 'package:movie_notes/feature/record_page/domain/provider/record_page_provider.dart';
-import 'package:movie_notes/utils/palette.dart';
-import 'package:movie_notes/utils/text_getter.dart';
-import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

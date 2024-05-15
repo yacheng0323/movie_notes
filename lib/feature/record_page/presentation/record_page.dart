@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_notes/entities/record_data.dart';
-import 'package:movie_notes/feature/home_page/domain/provider/home_page_provider.dart';
 import 'package:movie_notes/feature/record_page/domain/provider/record_page_provider.dart';
 import 'package:movie_notes/utils/palette.dart';
 import 'package:movie_notes/utils/show_snack_bar.dart';
