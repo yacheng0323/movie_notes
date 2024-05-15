@@ -3,7 +3,7 @@ include: package:flutter_lints/flutter.yaml
 
 linter:
   rules:
-
+    - use_build_context_synchronously
 analyzer: 
   plugins: 
     - custom_lint

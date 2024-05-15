@@ -33,20 +33,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider(create: (context) => Palette()),
-        Provider(create: (context) => TextGetter(context)),
-        ChangeNotifierProvider(create: (_) => HomePageProvider()),
-        ChangeNotifierProvider(create: (_) => RecordPageProvider()),
-      ],
-      child: MaterialApp.router(
-        routerConfig: appRouter.config(),
-        title: 'Flutter Demo',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: true,
-        ),
+    return MaterialApp.router(
+      routerConfig: appRouter.config(),
+      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
       ),
     );
   }

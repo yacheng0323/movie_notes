@@ -147,6 +147,7 @@ class RecordPageProvider extends ChangeNotifier {
     _selectedDateTime = DateTime.now();
     _databaseImagePath = null;
     _displayImagePath = null;
+    _imageFile = null;
     notifyListeners();
   }
 
