@@ -24,9 +24,12 @@ class RecordPage extends StatefulWidget {
 
 class RecordPageState extends State<RecordPage> {
   final _formKey = GlobalKey<FormState>();
-  final titleController = TextEditingController();
-  final theaterController = TextEditingController();
-  final contentController = TextEditingController();
+  late final titleController =
+      TextEditingController(text: widget.recordData?.title);
+  late final theaterController =
+      TextEditingController(text: widget.recordData?.theater);
+  late final contentController =
+      TextEditingController(text: widget.recordData?.content);
 
   @override
   void initState() {
@@ -49,21 +52,9 @@ class RecordPageState extends State<RecordPage> {
     return ChangeNotifierProvider(
       create: (context) {
         final RecordPageProvider recordPageProvider = RecordPageProvider();
-
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          recordPageProvider.cleanState();
-          if (widget.recordData != null) {
-            titleController.text = widget.recordData!.title;
-            theaterController.text = widget.recordData!.theater;
-            contentController.text = widget.recordData!.content ?? "";
-
-            recordPageProvider.setSelectedDateTime(
-                DateTime.fromMillisecondsSinceEpoch(
-                    widget.recordData!.datetime * 1000));
-            recordPageProvider.setImageFromDB(widget.recordData!.imagepath);
-            recordPageProvider.setRecordId(widget.recordData!);
-          }
-        });
+        recordPageProvider.setSelectedDateTime(widget.recordData?.datetime);
+        recordPageProvider.setImageFromDB(widget.recordData?.imagepath);
+        recordPageProvider.setRecordId(widget.recordData);
 
         return recordPageProvider;
       },
@@ -170,7 +161,9 @@ class RecordPageState extends State<RecordPage> {
                                         maxTime: DateTime(2034, 1, 1),
                                         onConfirm: (date) {
                                           recordPageProvider
-                                              .setSelectedDateTime(date);
+                                              .setSelectedDateTime(
+                                                  date.millisecondsSinceEpoch ~/
+                                                      1000);
                                         },
                                         currentTime:
                                             recordPageProvider.selectedDateTime,

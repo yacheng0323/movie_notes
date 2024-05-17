@@ -61,8 +61,12 @@ class RecordPageProvider extends ChangeNotifier {
     }
   }
 
-  void setSelectedDateTime(DateTime newDateTime) {
-    _selectedDateTime = newDateTime;
+  void setSelectedDateTime(int? timestamp) {
+    if (timestamp != null) {
+      _selectedDateTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    } else {
+      _selectedDateTime = DateTime.now();
+    }
     notifyListeners();
   }
 
@@ -151,8 +155,12 @@ class RecordPageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setRecordId(RecordData record) async {
-    _recordId = await recordDBProvider.getId(record);
+  Future<void> setRecordId(RecordData? record) async {
+    if (record != null) {
+      _recordId = await recordDBProvider.getId(record);
+    } else {
+      _recordId = null;
+    }
     notifyListeners();
   }
 
