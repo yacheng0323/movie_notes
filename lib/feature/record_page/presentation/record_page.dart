@@ -67,7 +67,7 @@ class RecordPageState extends State<RecordPage> {
                 centerTitle: true,
                 iconTheme: const IconThemeData(color: Colors.white),
                 title: Text(
-                  "電影記事本",
+                  "Movie Notes",
                   style: textgetter.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: palette.titleTextColor),
@@ -102,25 +102,25 @@ class RecordPageState extends State<RecordPage> {
 
                               ShowSnackBarHelper.successSnackBar(
                                       context: context)
-                                  .showSnackbar("新增成功");
+                                  .showSnackbar("Addition successful");
                             case RecordPageStatus.addFailed:
                               ShowSnackBarHelper.errorSnackBar(context: context)
-                                  .showSnackbar("新增失敗");
+                                  .showSnackbar("Addition failed");
                             case RecordPageStatus.updateSuccess:
                               Navigator.pop(context, true);
 
                               ShowSnackBarHelper.successSnackBar(
                                       context: context)
-                                  .showSnackbar("更新紀錄成功");
+                                  .showSnackbar("Record update successful");
                             case RecordPageStatus.updateFailed:
                               ShowSnackBarHelper.errorSnackBar(context: context)
-                                  .showSnackbar("更新紀錄失敗");
+                                  .showSnackbar("Record update failed");
                             default:
                           }
                         }
                       },
                       child: Text(
-                        "完成",
+                        "Done",
                         style:
                             textgetter.bodyLarge?.copyWith(color: Colors.white),
                       )),
@@ -139,15 +139,18 @@ class RecordPageState extends State<RecordPage> {
                           inputFormatters: [
                             LengthLimitingTextInputFormatter(200)
                           ],
-                          decoration: const InputDecoration(hintText: "請輸入標題"),
+                          decoration: const InputDecoration(
+                              hintText: "Please enter a title"),
                           validator: (value) {
-                            return value?.isEmpty == true ? "還沒輸入標題喔！" : null;
+                            return value?.isEmpty == true
+                                ? "You haven't entered a title yet!"
+                                : null;
                           },
                         ),
                         Row(
                           children: [
                             Text(
-                              "時間",
+                              "Time",
                               style: textgetter.titleMedium
                                   ?.copyWith(color: Colors.black),
                             ),
@@ -181,7 +184,7 @@ class RecordPageState extends State<RecordPage> {
                         Row(
                           children: [
                             Text(
-                              "劇院",
+                              "Theater",
                               style: textgetter.titleMedium
                                   ?.copyWith(color: Colors.black),
                             ),
@@ -199,7 +202,7 @@ class RecordPageState extends State<RecordPage> {
                                   LengthLimitingTextInputFormatter(200)
                                 ],
                                 decoration: const InputDecoration(
-                                  hintText: "請輸入劇院名稱",
+                                  hintText: "Please enter the theater name",
                                   filled: true,
                                   fillColor: Color(0xffECECEC),
                                   contentPadding:
@@ -211,7 +214,7 @@ class RecordPageState extends State<RecordPage> {
                                 ),
                                 validator: (value) {
                                   return value?.isEmpty == true
-                                      ? "還沒輸入劇院名稱喔！"
+                                      ? "You haven't entered the theater name yet!"
                                       : null;
                                 },
                               ),
@@ -223,7 +226,8 @@ class RecordPageState extends State<RecordPage> {
                           minLines: 1,
                           maxLines: 100,
                           decoration: const InputDecoration(
-                              hintText: "請輸入內容", border: InputBorder.none),
+                              hintText: "Please enter the content",
+                              border: InputBorder.none),
                         ),
                         const Padding(padding: EdgeInsets.all(4)),
                         GestureDetector(
@@ -231,10 +235,11 @@ class RecordPageState extends State<RecordPage> {
                             showCupertinoModalPopup(
                               context: context,
                               builder: (context) => CupertinoActionSheet(
-                                title: const Text("請選擇上傳方式"),
+                                title:
+                                    const Text("Please choose upload method"),
                                 actions: [
                                   CupertinoActionSheetAction(
-                                    child: const Text('從圖片庫'),
+                                    child: const Text("From gallery"),
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                       recordPageProvider.getImage(
@@ -242,7 +247,7 @@ class RecordPageState extends State<RecordPage> {
                                     },
                                   ),
                                   CupertinoActionSheetAction(
-                                    child: const Text('拍照'),
+                                    child: const Text("Take a photo"),
                                     onPressed: () {
                                       Navigator.of(context).pop();
                                       recordPageProvider.getImage(
@@ -278,7 +283,7 @@ class RecordPageState extends State<RecordPage> {
                                               const Padding(
                                                   padding: EdgeInsets.all(3)),
                                               Text(
-                                                "選擇圖片",
+                                                "Choose a picture",
                                                 style: textgetter.bodyLarge
                                                     ?.copyWith(
                                                         color: const Color(

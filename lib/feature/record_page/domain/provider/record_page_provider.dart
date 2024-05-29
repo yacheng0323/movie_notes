@@ -140,10 +140,10 @@ class RecordPageProvider extends ChangeNotifier {
         _displayImagePath = imageFile.path;
         notifyListeners();
       } else {
-        log('圖片文件不存在');
+        log("Image file does not exist");
       }
     } else {
-      log('路徑為空');
+      log("Path is empty");
     }
   }
 

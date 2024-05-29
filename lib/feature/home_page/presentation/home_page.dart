@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
               appBar: AppBar(
                 backgroundColor: palette.appBarColor,
                 title: Text(
-                  "電影記事本",
+                  "Movie Notes",
                   style: textgetter.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: palette.titleTextColor),
@@ -128,8 +128,10 @@ class _HomePageState extends State<HomePage> {
                                         context: context,
                                         builder: (BuildContext context) {
                                           return CupertinoAlertDialog(
-                                            title: const Text("確定刪除?"),
-                                            content: const Text("確定要刪除此筆紀錄嗎?"),
+                                            title:
+                                                const Text("Confirm deletion?"),
+                                            content: const Text(
+                                                "Are you sure you want to delete this record??"),
                                             actions: <Widget>[
                                               TextButton(
                                                   onPressed: () async {
@@ -141,11 +143,11 @@ class _HomePageState extends State<HomePage> {
                                                     // ignore: use_build_context_synchronously
                                                     Navigator.of(context).pop();
                                                   },
-                                                  child: const Text("刪除")),
+                                                  child: const Text("Delete")),
                                               TextButton(
                                                 onPressed: () =>
                                                     Navigator.of(context).pop(),
-                                                child: const Text("取消"),
+                                                child: const Text("Cancel"),
                                               ),
                                             ],
                                           );
@@ -281,7 +283,7 @@ class _HomePageState extends State<HomePage> {
                                       const Padding(
                                           padding: EdgeInsets.all(20)),
                                       Text(
-                                        "電影等待中...",
+                                        "Movie waiting...",
                                         style: textgetter.bodyLarge?.copyWith(
                                             color: const Color(0xffAAAAAA)),
                                       ),
@@ -289,7 +291,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 inputDecoration: const InputDecoration(
-                                  hintText: "搜尋",
+                                  hintText: "Search",
                                   fillColor: Color(0xffECECEC),
                                   filled: true,
                                   prefixIcon: Icon(Icons.search),
@@ -319,7 +321,7 @@ class _HomePageState extends State<HomePage> {
                                   const LinearProgressIndicator(),
                                   const Padding(padding: EdgeInsets.all(4)),
                                   Text(
-                                    "載入中...",
+                                    "Loading...",
                                     style: textgetter.bodyLarge
                                         ?.copyWith(color: Colors.black),
                                   )
@@ -339,7 +341,7 @@ class _HomePageState extends State<HomePage> {
                                   height:
                                       MediaQuery.of(context).size.height / 2,
                                   child: const Center(
-                                    child: Text("獲取資料失敗"),
+                                    child: Text("Failed to retrieve data"),
                                   ),
                                 ),
                               ));
